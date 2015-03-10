@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Native sms forwarder</string>
+
+    <string name="important">Please read this before use!</string>
+    <string name="info">Native sms forwards uses your phones native groups and contacts. This gives you opportunity to administrate users through androids native contacts.</string>
+    <string name="info_purpose">Purpose of this app is to take over android and turn it to message central.</string>
+    <string name="info_dedicate">It is highly recommended to dedicate a separate phone to this app.</string>
+    <string name="info_warning">WARNING: 1. All Inbox messages will be deleted! 2. This service may cost you money, especially if receivers are from out of country.</string>
+    <string name="info_usage">In order to use this app you have to:</string>
+    <string name="info_usage_0"> - gsm and internet connection.</string>
+    <string name="info_usage_1"> - register this phone to a google account - gives you option to administrate users and groups through gmail/google contacts.</string>
+    <string name="info_usage_2"> - for backup of SMSs just install SMS Backup+ app - no further  actions needed.</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="title_activity_forwarder">ForwarderActivity</string>
+    <string name="dummy_button">Sync Contacts Now</string>
+    <string name="dummy_content">SMS Forwarder\n is starting up</string>
+
+</resources>

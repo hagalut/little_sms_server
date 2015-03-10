@@ -1,0 +1,100 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+<TextView android:text="@string/important" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewImportant"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+    android:layout_gravity="center_horizontal"
+    android:textColor="#FF5874"
+    android:textColorHighlight="#AA9874"
+    android:textSize="20dp" />
+
+    <TextView android:text="@string/info" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewInfo"
+        android:layout_marginTop="44dp"
+        android:layout_below="@+id/textView2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_weight="0.20" />
+
+    <TextView android:text="@string/info_purpose" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/textViewImportant"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="25dp" />
+
+    <TextView android:text="@string/info_dedicate" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewInfo_dedicate"
+        android:layout_below="@+id/textViewInfo"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="43dp" />
+
+    <TextView android:text="@string/info_warning" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewInfoWarning"
+        android:layout_marginTop="22dp"
+        android:layout_below="@+id/textViewInfo_dedicate"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textIsSelectable="false"
+        android:textSize="13dp"
+        android:background="#FF0000" />
+
+    <TextView android:text="@string/info_usage" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewInfoUsage"
+        android:layout_below="@+id/textViewInfoWarning"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="26dp" />
+
+    <TextView android:text="@string/info_usage_0" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewInfoUsage_0"
+        android:layout_below="@+id/textViewInfoUsage"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView android:text="@string/info_usage_1" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewInfoUsage_1"
+        android:layout_below="@+id/textViewInfoUsage_0"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView android:text="@string/info_usage_2" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewInfoUsage_2"
+        android:layout_below="@+id/textViewInfoUsage_1"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Yes Mom!"
+        android:id="@+id/buttonNxt"
+        android:layout_below="@+id/textViewInfoUsage_2"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal" />
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView" />
+
+    </LinearLayout>
+</ScrollView>
