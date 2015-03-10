@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="dk.glutter.izbrannick.nativesmsforwarder">
 
+    <uses-sdk
+        android:minSdkVersion="10"
+        android:targetSdkVersion="21" />
+
     <uses-permission android:name="android.permission.WRITE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
