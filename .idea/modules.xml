@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Nativesmsforwarder.iml" filepath="$PROJECT_DIR$/Nativesmsforwarder.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/little_sms_server.iml" filepath="$PROJECT_DIR$/little_sms_server.iml" />
     </modules>
   </component>
 </project>
