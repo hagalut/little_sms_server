@@ -22,8 +22,9 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <action android:name="android.provider.Telephony.SMS_DELIVER"/>
+    <!-- <action android:name="android.provider.Telephony.SMS_DELIVER"/>
     <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+    -->
 
     <application
         android:allowBackup="true"

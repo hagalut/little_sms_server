@@ -2,7 +2,7 @@ package dk.glutter.izbrannick.nativesmsforwarder;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -18,6 +18,8 @@ import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity {
+    SharedPreferences prefs = null;
+    public static boolean isNavigatingFromOtherActivity = false;
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Override
@@ -25,20 +27,8 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_info);
 
-        // Run web view if SDK version is newer than android 2.3.3
-        // Web view is extremely slow on 2.3.3
-        if ( (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) ) {
-            if (isNetworkAvailable())
-                showWebInfo();
-            else
-            {
-                Toast.makeText(this, "Warning could not detect internet connection!!!", Toast.LENGTH_LONG).show();
-                showLocalInfo();
-            }
-        }
-        else
-            showLocalInfo();
-
+        // for registering first run
+        prefs = getSharedPreferences("dk.glutter.izbrannick.nativesmsforwarder", MODE_PRIVATE);
     }
 
     private void showWebInfo() {
@@ -63,7 +53,6 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -84,6 +73,36 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (prefs.getBoolean("firstrun", true)) {
+            // Doing first run stuff here aftewords setting 'firstrun' as false
+
+            // Run web view if SDK version is newer than android 2.3.3
+            // Web view is extremely slow on 2.3.3
+            if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2)) {
+                if (isNetworkAvailable())
+                    showWebInfo();
+                else {
+                    Toast.makeText(this, "Warning could not detect internet connection!!!", Toast.LENGTH_LONG).show();
+                    showLocalInfo();
+                }
+            } else
+                showLocalInfo();
+
+            // using the following line to edit/commit prefs
+            prefs.edit().putBoolean("firstrun", false).commit();
+        }else
+        {
+            if (!isNavigatingFromOtherActivity) {
+                WebAppInterface webAppInterface = new WebAppInterface(getApplicationContext());
+                webAppInterface.moveOn("Starting SMS Forwarder");
+            }
+        }
     }
 
     private boolean isNetworkAvailable() {

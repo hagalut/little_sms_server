@@ -18,8 +18,9 @@ public class SmsHandler
     final static String ADMIN_NR = Consts.ADMIN_NR;
 	
 	private static Context context;
+    private final boolean deleteMessages;
 
-	private ContactsHandler myContacs;
+    private ContactsHandler myContacs;
 	private ArrayList<String> allGroupNames = null;
 	private ArrayList<String> currentGroupNumbers = null;
 	private String phoneNr;
@@ -33,7 +34,7 @@ public class SmsHandler
 	private boolean stopNow; // if there is an String exception
 
 
-    SmsHandler(Context context, String nr, String msg, String currSmsId)
+    SmsHandler(Context context, String nr, String msg, String currSmsId, boolean deleteMessages)
 	{
 		this.context = context;
         this.currSmsId = currSmsId;
@@ -41,6 +42,7 @@ public class SmsHandler
 		phoneNr = nr;
 		besked = msg;
 		beskedLowCase = msg.toLowerCase();
+        this.deleteMessages = deleteMessages;
 		
 		// TODO: IM chose when msg starts with IMU
 			allGroupNames = myContacs.getAllGroupNames();
@@ -52,7 +54,7 @@ public class SmsHandler
 				// TODO: handle exception
 				Log.d("IMUSMS group ", "something went wrong: " + e.getMessage());
 				Log.d("IMUSMS msg ", msg);
-				sendSmsThenDelete(DEVELOPR_NR, besked, currSmsId);
+				sendSmsThenDelete(DEVELOPR_NR, besked, currSmsId, deleteMessages);
 				stopNow = true;
 			}
 			
@@ -73,10 +75,10 @@ public class SmsHandler
                 if (groupFound)
                     treatSmsLikeAKing();
                 else
-                    sendSmsThenDelete(phoneNr, "Gruppen " + currentGroup + " findes ikke.", currSmsId);
+                    sendSmsThenDelete(phoneNr, "Gruppen " + currentGroup + " findes ikke.", currSmsId, deleteMessages);
 			}
 			if (stopNow) {
-				sendSmsThenDelete(phoneNr, "Der gik noget galt prøv igen", currSmsId);
+				sendSmsThenDelete(phoneNr, "Der gik noget galt prøv igen", currSmsId, deleteMessages);
 			}
 	}
 
@@ -139,7 +141,7 @@ public class SmsHandler
                     sendSmsThenDelete(phoneNr, "Du er tilmeldt til "
                             + currentGroup
                             + " sms-fon. For at sende sms til alle i gruppen skriv "
-                            + currentGroup + " og din besked ", currSmsId);
+                            + currentGroup + " og din besked ", currSmsId, deleteMessages);
 
                     // force Sync phone contacts with gmail contacts
                     SyncContacts.requestSync(context);
@@ -149,7 +151,7 @@ public class SmsHandler
                     sendSmsThenDelete(phoneNr, "Du er allerede tilmeldt til "
                             + currentGroup
                             + " sms-fon :-) . For at sende sms til alle i gruppen skriv "
-                            + currentGroup + " og din besked ", currSmsId);
+                            + currentGroup + " og din besked ", currSmsId, deleteMessages);
                 }
 
                 return;
@@ -169,16 +171,16 @@ public class SmsHandler
 			{
 				for (int i = 0; i < currentGroupNumbers.size(); i++)
 				{
-					sendSmsThenDelete(currentGroupNumbers.get(i), besked, currSmsId);
+					sendSmsThenDelete(currentGroupNumbers.get(i), besked, currSmsId, deleteMessages);
 					Log.d("IMUSMS sending to", currentGroupNumbers.get(i));
 				}
                 return;
 			}
 		}else
-			sendSmsThenDelete(phoneNr, "Gruppen eksisterer ikke", currSmsId);
+			sendSmsThenDelete(phoneNr, "Gruppen eksisterer ikke", currSmsId, deleteMessages);
 	}
 
-	public static boolean sendSmsThenDelete(final String aDestination, final String aMessageText, final String currSmsId)
+	public static boolean sendSmsThenDelete(final String aDestination, final String aMessageText, final String currSmsId, final boolean deleteMessages)
 	{
         final SmsManager smsManager = SmsManager.getDefault();
         final ArrayList<String> iFragmentList = smsManager.divideMessage (aMessageText);
@@ -190,11 +192,13 @@ public class SmsHandler
                 public void run() {
                     smsManager.sendMultipartTextMessage(aDestination, null, iFragmentList, null, null);
 
-                    // try ---------  DELETE SMS
-                    try{
-                        delete_thread(currSmsId);
-                    }catch(Exception e){
-                        Log.d("Error deleting SMS ", aDestination +" messge: "+  aMessageText);
+                    if (deleteMessages) {
+                        // try ---------  DELETE SMS
+                        try {
+                            delete_thread(currSmsId);
+                        } catch (Exception e) {
+                            Log.d("Error deleting SMS ", aDestination + " messge: " + aMessageText);
+                        }
                     }
 
                 }
@@ -238,11 +242,11 @@ public class SmsHandler
         String failedMsg = phoneNr+"har prøvet at afmelde sig og mislykkes. " + "besked: " + besked;
         try {
             myContacs.deleteContactFromGroup( phoneNr, currentGroup);
-            sendSmsThenDelete(phoneNr, "Du er afmeldt fra " + currentGroup + " sms-fon. ", currSmsId);
+            sendSmsThenDelete(phoneNr, "Du er afmeldt fra " + currentGroup + " sms-fon. ", currSmsId, deleteMessages);
         }catch (Exception e)
         {
             Log.d(failedMsg, e.getMessage());
-            sendSmsThenDelete(ADMIN_NR, failedMsg, currSmsId);
+            sendSmsThenDelete(ADMIN_NR, failedMsg, currSmsId, deleteMessages);
         }
 
 	}

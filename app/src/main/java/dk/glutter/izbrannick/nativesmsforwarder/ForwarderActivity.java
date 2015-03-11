@@ -15,7 +15,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,6 +134,9 @@ public class ForwarderActivity extends Activity {
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
+
+
+
         // Run()  does all the magic
         run();
     }
@@ -144,6 +151,12 @@ public class ForwarderActivity extends Activity {
         delayedHide(100);
     }
 
+
+    @Override
+    public void onBackPressed() {
+        MainActivity.isNavigatingFromOtherActivity = true;
+        super.onBackPressed();
+    }
 
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
@@ -188,57 +201,63 @@ public class ForwarderActivity extends Activity {
     int messageCount = 0;
     Handler handler;
     SmsHandler smsHandler;
+    boolean forwarding = false;
+    boolean deleteMessages = false;
 
 
     private void run()
     {
         Runnable runnable = null;
 
-
-
         if(runnable != null)
             handler.removeCallbacks(runnable);
 
-        if(handler == null) {
+        if(handler == null)
+        {
             handler = new Handler();
-
-            runnable = new Runnable() {
-                public void run() {
-
+            runnable = new Runnable()
+            {
+                public void run()
+                {
                     messageCount = getAllSms().size();
-
-                    text = "There are " + messageCount + " messages in your inbox : ";
                     currSmsId = null;
 
-                    if (messageCount > 0) {
-                        for (int i = 0; i < messageCount; i++) {
-                            currMsg = getAllSms().get(i).getMsg();
-                            currSmsId = getAllSms().get(i).getId();
-                            currNr = getAllSms().get(i).getAddress();
+                    forwarding = ((ToggleButton) findViewById(R.id.forwarder_toggl)).isChecked();
+                    if (forwarding)
+                    {
+                        deleteMessages = true;
+                        Toast.makeText(getApplicationContext(), "Forwarding is " + forwarding, Toast.LENGTH_LONG).show();
 
-                            text = "besked " + i + " fra " + "  " + currNr + ": " + currMsg;
+                        if (messageCount > 0)
+                        {
+                            currMsg = getAllSms().get(0).getMsg();
+                            currSmsId = getAllSms().get(0).getId();
+                            currNr = getAllSms().get(0).getAddress();
 
+                            text = "Message from " + "  " + currNr + ": " + currMsg;
 
                             //BACKUP SMS - sync with SMS Backup PLus
                             ThirdPartyApp la = new ThirdPartyApp();
                             la.startAppAction(context, "com.zegoggles.smssync.BACKUP");
 
-                            if (StringValidator.isMessageValid(currMsg)) {
-
-                                // Handle SMS
-                                smsHandler = new SmsHandler(context, currNr, currMsg, currSmsId);
-
-                            }else
+                            if (StringValidator.isMessageValid(currMsg) && forwarding == true)
                             {
-                                smsHandler.sendSmsThenDelete(currNr, Consts.HELP_RESPONSE, currSmsId);
+                                // Handle SMS
+                                text = "Sending Group message from " + currNr + " : " + currMsg;
+                                smsHandler = new SmsHandler(context, currNr, currMsg, currSmsId, deleteMessages);
+
+                            } else
+                            {
+                                text = "Sending INFO message to " + currNr + " : " + currMsg;
+                                smsHandler.sendSmsThenDelete(currNr, Consts.HELP_RESPONSE, currSmsId, deleteMessages);
                             }
                         }
+
+                        if (currSmsId == null)
+                            text = "There are currently " + messageCount + " messages in your inbox : ";
+
+                        tv.setText(text);
                     }
-
-                    if (currSmsId == null)
-                        text = "There are currently " + messageCount + " messages in your inbox : ";
-
-                    tv.setText(text);
 
                     handler.postDelayed(this, 60000); // now is every 1 minutes
                 }

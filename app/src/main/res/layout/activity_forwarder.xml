@@ -8,7 +8,7 @@
          TextureView, etc. -->
     <TextView android:id="@+id/fullscreen_content" android:layout_width="match_parent"
         android:layout_height="match_parent" android:keepScreenOn="true" android:textColor="#33b5e5"
-        android:textStyle="bold" android:textSize="50sp" android:gravity="center"
+        android:textStyle="bold" android:textSize="30sp" android:gravity="center"
         android:text="@string/dummy_content" />
 
     <!-- This FrameLayout insets its children based on system windows using
@@ -27,6 +27,31 @@
                 android:layout_weight="1" android:text="@string/dummy_button" />
 
         </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="94dp"
+            android:layout_gravity="center|top">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Forwarding is"
+                android:id="@+id/textView"
+                android:layout_gravity="bottom|left" />
+
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New ToggleButton"
+                android:id="@+id/forwarder_toggl"
+                android:layout_gravity="bottom|right"
+                android:checked="false" />
+
+        </LinearLayout>
+
     </FrameLayout>
 
 </FrameLayout>
