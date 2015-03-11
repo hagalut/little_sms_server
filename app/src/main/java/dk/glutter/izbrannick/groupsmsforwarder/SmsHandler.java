@@ -1,4 +1,4 @@
-package dk.glutter.izbrannick.nativesmsforwarder;
+package dk.glutter.izbrannick.groupsmsforwarder;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,8 +9,8 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import dk.glutter.izbrannick.nativesmsforwarder.contacts.ContactsHandler;
-import dk.glutter.izbrannick.nativesmsforwarder.contacts.SyncContacts;
+import dk.glutter.izbrannick.groupsmsforwarder.contacts.ContactsHandler;
+import dk.glutter.izbrannick.groupsmsforwarder.contacts.SyncContacts;
 
 public class SmsHandler
 {
@@ -18,7 +18,7 @@ public class SmsHandler
     final static String ADMIN_NR = Consts.ADMIN_NR;
 	
 	private static Context context;
-    private final boolean deleteMessages;
+    private boolean deleteMessages;
 
     private ContactsHandler myContacs;
 	private ArrayList<String> allGroupNames = null;
@@ -33,6 +33,11 @@ public class SmsHandler
 	private boolean isAfmelding;
 	private boolean stopNow; // if there is an String exception
 
+
+    SmsHandler(Context context)
+    {
+        this.context = context;
+    }
 
     SmsHandler(Context context, String nr, String msg, String currSmsId, boolean deleteMessages)
 	{
@@ -195,6 +200,7 @@ public class SmsHandler
                     if (deleteMessages) {
                         // try ---------  DELETE SMS
                         try {
+                            // TODO: if failed to delete sms add sms ID to ignore list
                             delete_thread(currSmsId);
                         } catch (Exception e) {
                             Log.d("Error deleting SMS ", aDestination + " messge: " + aMessageText);

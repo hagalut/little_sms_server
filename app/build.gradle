@@ -5,11 +5,11 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "dk.glutter.izbrannick.nativesmsforwarder"
+        applicationId "dk.glutter.izbrannick.groupsmsforwarder"
         minSdkVersion 10
         targetSdkVersion 21
-        versionCode 5
-        versionName "First Release"
+        versionCode 6
+        versionName "UI Update 1"
     }
     buildTypes {
         release {

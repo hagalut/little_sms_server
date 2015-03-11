@@ -1,4 +1,4 @@
-package dk.glutter.izbrannick.nativesmsforwarder;
+package dk.glutter.izbrannick.groupsmsforwarder;
 
 /**
  * Created by izbrannick on 27-01-2015.

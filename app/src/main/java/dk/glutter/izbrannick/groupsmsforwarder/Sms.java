@@ -1,4 +1,4 @@
-package dk.glutter.izbrannick.nativesmsforwarder;
+package dk.glutter.izbrannick.groupsmsforwarder;
 
 public class Sms {
 

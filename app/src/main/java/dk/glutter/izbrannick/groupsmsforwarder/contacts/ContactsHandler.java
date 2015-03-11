@@ -1,4 +1,4 @@
-package dk.glutter.izbrannick.nativesmsforwarder.contacts;
+package dk.glutter.izbrannick.groupsmsforwarder.contacts;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;

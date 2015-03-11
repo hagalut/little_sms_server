@@ -1,7 +1,7 @@
-package dk.glutter.izbrannick.nativesmsforwarder;
+package dk.glutter.izbrannick.groupsmsforwarder;
 
-import dk.glutter.izbrannick.nativesmsforwarder.otherapps.ThirdPartyApp;
-import dk.glutter.izbrannick.nativesmsforwarder.util.SystemUiHider;
+import dk.glutter.izbrannick.groupsmsforwarder.otherapps.ThirdPartyApp;
+import dk.glutter.izbrannick.groupsmsforwarder.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -15,8 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.Switch;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -68,6 +67,8 @@ public class ForwarderActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_forwarder);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 
         this.context = getApplicationContext();
 
@@ -249,6 +250,7 @@ public class ForwarderActivity extends Activity {
                             } else
                             {
                                 text = "Sending INFO message to " + currNr + " : " + currMsg;
+                                smsHandler = new SmsHandler(getApplicationContext()); // sending ctx for deletion
                                 smsHandler.sendSmsThenDelete(currNr, Consts.HELP_RESPONSE, currSmsId, deleteMessages);
                             }
                         }

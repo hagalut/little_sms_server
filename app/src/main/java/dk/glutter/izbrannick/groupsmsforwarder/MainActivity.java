@@ -1,4 +1,4 @@
-package dk.glutter.izbrannick.nativesmsforwarder;
+package dk.glutter.izbrannick.groupsmsforwarder;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -28,7 +28,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_web_info);
 
         // for registering first run
-        prefs = getSharedPreferences("dk.glutter.izbrannick.nativesmsforwarder", MODE_PRIVATE);
+        prefs = getSharedPreferences("dk.glutter.izbrannick.groupsmsforwarder", MODE_PRIVATE);
     }
 
     private void showWebInfo() {

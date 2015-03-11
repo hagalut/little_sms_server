@@ -1,4 +1,4 @@
-package dk.glutter.izbrannick.nativesmsforwarder.otherapps;
+package dk.glutter.izbrannick.groupsmsforwarder.otherapps;
 
 import android.content.Context;
 import android.content.Intent;
