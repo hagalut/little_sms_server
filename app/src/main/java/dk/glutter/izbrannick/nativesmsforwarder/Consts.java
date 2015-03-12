@@ -1,4 +1,4 @@
-package dk.glutter.izbrannick.groupsmsforwarder;
+package dk.glutter.izbrannick.nativesmsforwarder;
 
 /**
  * Created by izbrannick on 27-01-2015.
@@ -18,6 +18,8 @@ public final class Consts {
     public static Context MIAN_CTX = null;
 
     public static final String HELP_RESPONSE = "husk at indtaste : efter gruppe navn. For eksempel Gruppe1: og din besked. For tilmelde eller afmelde skriv Afmeld Gruppe1: Navn";
+    public static final String NO_GROUP = "Gruppen findes ikke";
+    public static final String SOMETHING_WRONG = "Der gik noget galt prøv igen" ;
 
     public static final String KEY_DEFAULT_SMS_PROVIDER = "dk.glutter.dk.smsforwarder.DefaultSmsProvider";
 

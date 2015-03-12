@@ -1,4 +1,4 @@
-package dk.glutter.izbrannick.groupsmsforwarder.util;
+package dk.glutter.izbrannick.nativesmsforwarder.util;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

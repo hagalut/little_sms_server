@@ -1,4 +1,4 @@
-package dk.glutter.izbrannick.groupsmsforwarder;
+package dk.glutter.izbrannick.nativesmsforwarder;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,8 +9,8 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import dk.glutter.izbrannick.groupsmsforwarder.contacts.ContactsHandler;
-import dk.glutter.izbrannick.groupsmsforwarder.contacts.SyncContacts;
+import dk.glutter.izbrannick.nativesmsforwarder.contacts.ContactsHandler;
+import dk.glutter.izbrannick.nativesmsforwarder.contacts.SyncContacts;
 
 public class SmsHandler
 {
@@ -22,15 +22,15 @@ public class SmsHandler
 
     private ContactsHandler myContacs;
 	private ArrayList<String> allGroupNames = null;
-	private ArrayList<String> currentGroupNumbers = null;
+	private ArrayList<String> currentGroupNumbers = new ArrayList<>();
 	private String phoneNr;
 	private String besked;
 	private String currentName;
 	private String beskedLowCase;
 	private String currentGroup;
     private String currSmsId;
-	private boolean isTilmelding;
-	private boolean isAfmelding;
+	private boolean isTilmelding = false;
+	private boolean isAfmelding = false;
 	private boolean stopNow; // if there is an String exception
 
 
@@ -48,87 +48,65 @@ public class SmsHandler
 		besked = msg;
 		beskedLowCase = msg.toLowerCase();
         this.deleteMessages = deleteMessages;
-		
-		// TODO: IM chose when msg starts with IMU
-			allGroupNames = myContacs.getAllGroupNames();
-			
-			// trying to extract group name and user name
-			try {
-				currentGroup = findGroupAndUserNameFromMsg();
-			} catch (Exception e) {
-				// TODO: handle exception
-				Log.d("IMUSMS group ", "something went wrong: " + e.getMessage());
-				Log.d("IMUSMS msg ", msg);
-				sendSmsThenDelete(DEVELOPR_NR, besked, currSmsId, deleteMessages);
-				stopNow = true;
-			}
-			
-			if (stopNow != true)
-			{
-				currentGroupNumbers = myContacs.getAllNumbersFromGroupName(currentGroup);
-                boolean groupFound = false;
-				
-				for (int i = 0; i < allGroupNames.size(); i++) {
-					//if (beskedLowCase.startsWith(allGroupNames.get(i).toLowerCase())) {
-					//Log.d("currentGroup group "+i+": ", allGroupNames.get(i));
-						if (allGroupNames.get(i).equalsIgnoreCase(currentGroup)) {
-							currentGroup = allGroupNames.get(i);
-                            groupFound = true;
-							break;
-						}
-				}
-                if (groupFound)
-                    treatSmsLikeAKing();
-                else
-                    sendSmsThenDelete(phoneNr, "Gruppen " + currentGroup + " findes ikke.", currSmsId, deleteMessages);
-			}
-			if (stopNow) {
-				sendSmsThenDelete(phoneNr, "Der gik noget galt prøv igen", currSmsId, deleteMessages);
-			}
+
+        allGroupNames = myContacs.getAllGroupNames();
+
+        // trying to extract group name and user name
+        try {
+            initiateMessageRendering();
+        } catch (Exception e) {
+            Log.d("Redering err ", e.getMessage());
+            Log.d("Redering err ", msg);
+            sendSmsThenDelete(DEVELOPR_NR, besked, currSmsId, deleteMessages);
+            stopNow = true;
+        }
+
+        if (stopNow != true)
+        {
+            //currentGroupNumbers = myContacs.getAllNumbersFromGroupName(currentGroup);
+            boolean groupFound = false;
+
+            for (int i = 0; i < allGroupNames.size(); i++) {
+                //if (beskedLowCase.startsWith(allGroupNames.get(i).toLowerCase())) {
+                //Log.d("currentGroup group "+i+": ", allGroupNames.get(i));
+                    if (allGroupNames.get(i).equalsIgnoreCase(currentGroup)) {
+                        currentGroup = allGroupNames.get(i);
+                        groupFound = true;
+                        break;
+                    }
+            }
+            if (groupFound)
+                treatSmsLikeAKing();
+            else
+                sendSmsThenDelete(phoneNr, Consts.HELP_RESPONSE, currSmsId, deleteMessages);
+        }
+        if (stopNow) {
+            sendSmsThenDelete(phoneNr, Consts.HELP_RESPONSE, currSmsId, deleteMessages);
+        }
 	}
 
-    private String findGroupAndUserNameFromMsg()
+    private void initiateMessageRendering()
 	{
-		String groupName = "";
-		int i = 0;
-
-		// --------- - TILMELD - ---------
-		if (StringValidator.isSignup(beskedLowCase)){
-			i = i + 8; // to ignore string: "tilmeld " - and get group name after string
-			do {
-				groupName += beskedLowCase.substring(i, i+1); //Eks. IMU:  i+m+u
-				i++;
-			} while (!beskedLowCase.substring(6, i).contains(":"));
-			isTilmelding = true;
-			// Exstract string after String: tilmeld & group
-			currentName = beskedLowCase.substring(8+groupName.length());
-
-            return groupName.toUpperCase().replace(" ", "");
-		}
-		// --------- - AFMELD - ---------
-		if (StringValidator.isResign(beskedLowCase)) {
-			i = i + 6; // to ignore string: "tilmeld " - and get group name after string
-			do {
-				groupName += beskedLowCase.substring(i, i+1); //Eks. IMU:  i+m+u
-				i++;
-			} while (!beskedLowCase.substring(6, i).contains(":"));
-			isAfmelding = true;
-			currentName = beskedLowCase.substring(6+groupName.length());
-
-            return groupName.toUpperCase().replace(" ", "");
-		}
-		// --------- - GRUPPE BESKED - ---------
-		else
-		if (beskedLowCase.contains(":") && !beskedLowCase.startsWith("tilmeld") && !beskedLowCase.startsWith("afmeld")) {
-			do {
-				groupName += beskedLowCase.substring(i, i+1); //Eks. IMU:  i+m+u
-				i++;
-			} while (!beskedLowCase.substring(0, i).contains(":"));
-			isTilmelding = false;
-			isAfmelding = false;
-		}
-
-		return groupName.toUpperCase().replace(" ", "");
+		// --------- - Signup - ---------
+		if (StringValidator.isSignup(beskedLowCase) != null) {
+            currentGroup = StringValidator.words.get(1);
+            currentName = StringValidator.words.get(2);
+            isTilmelding = true;
+        }
+		// --------- - Resign - ---------
+		if (StringValidator.isResign(beskedLowCase) != null){
+            currentGroup = StringValidator.words.get(1);
+            currentName = StringValidator.words.get(2);
+            isAfmelding = true;
+        }
+		// --------- - GROUP Message - ---------
+		if (StringValidator.isGroupMessage(beskedLowCase, context) != null){
+            currentGroup = StringValidator.words.get(0);
+			currentGroupNumbers = StringValidator.groupNumbers;
+        }
+        else{
+            stopNow = true;
+        }
 	}
 	
 	private void treatSmsLikeAKing()
@@ -182,7 +160,7 @@ public class SmsHandler
                 return;
 			}
 		}else
-			sendSmsThenDelete(phoneNr, "Gruppen eksisterer ikke", currSmsId, deleteMessages);
+			sendSmsThenDelete(phoneNr, Consts.NO_GROUP, currSmsId, deleteMessages);
 	}
 
 	public static boolean sendSmsThenDelete(final String aDestination, final String aMessageText, final String currSmsId, final boolean deleteMessages)

@@ -1,4 +1,4 @@
-package dk.glutter.izbrannick.groupsmsforwarder;
+package dk.glutter.izbrannick.nativesmsforwarder;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

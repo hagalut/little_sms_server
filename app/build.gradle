@@ -5,11 +5,11 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "dk.glutter.izbrannick.groupsmsforwarder"
+        applicationId "dk.glutter.izbrannick.nativesmsforwarder"
         minSdkVersion 10
         targetSdkVersion 21
         versionCode 6
-        versionName "UI Update 1"
+        versionName "UI Update 2 (NameChange to Group SMS)"
     }
     buildTypes {
         release {

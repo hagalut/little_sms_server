@@ -1,7 +1,8 @@
-package dk.glutter.izbrannick.groupsmsforwarder;
+package dk.glutter.izbrannick.nativesmsforwarder;
 
-import dk.glutter.izbrannick.groupsmsforwarder.otherapps.ThirdPartyApp;
-import dk.glutter.izbrannick.groupsmsforwarder.util.SystemUiHider;
+import dk.glutter.izbrannick.nativesmsforwarder.contacts.ContactsHandler;
+import dk.glutter.izbrannick.nativesmsforwarder.otherapps.ThirdPartyApp;
+import dk.glutter.izbrannick.nativesmsforwarder.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -17,7 +18,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
@@ -140,6 +140,11 @@ public class ForwarderActivity extends Activity {
 
         // Run()  does all the magic
         run();
+
+        /*
+        ContactsHandler contactsHandler = new ContactsHandler(context);
+        contactsHandler.createGoogleGroup("GROUP1:");
+        */
     }
 
     @Override
@@ -227,7 +232,7 @@ public class ForwarderActivity extends Activity {
                     if (forwarding)
                     {
                         deleteMessages = true;
-                        Toast.makeText(getApplicationContext(), "Forwarding is " + forwarding, Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(), "Forwarding is " + forwarding, Toast.LENGTH_LONG).show();
 
                         if (messageCount > 0)
                         {
@@ -241,17 +246,11 @@ public class ForwarderActivity extends Activity {
                             ThirdPartyApp la = new ThirdPartyApp();
                             la.startAppAction(context, "com.zegoggles.smssync.BACKUP");
 
-                            if (StringValidator.isMessageValid(currMsg) && forwarding == true)
+                            if (forwarding == true)
                             {
-                                // Handle SMS
+                              // Handle SMS
                                 text = "Sending Group message from " + currNr + " : " + currMsg;
                                 smsHandler = new SmsHandler(context, currNr, currMsg, currSmsId, deleteMessages);
-
-                            } else
-                            {
-                                text = "Sending INFO message to " + currNr + " : " + currMsg;
-                                smsHandler = new SmsHandler(getApplicationContext()); // sending ctx for deletion
-                                smsHandler.sendSmsThenDelete(currNr, Consts.HELP_RESPONSE, currSmsId, deleteMessages);
                             }
                         }
 
