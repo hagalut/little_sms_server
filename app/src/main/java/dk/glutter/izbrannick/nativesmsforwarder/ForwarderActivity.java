@@ -284,7 +284,7 @@ public class ForwarderActivity extends Activity {
                         }
 
                         if (currSmsId == null)
-                            text = "There are currently " + messageCount + " messages in your inbox : ";
+                            text = getString(R.string.currentSMSs);
 
                         tv.setText(text);
                     }
