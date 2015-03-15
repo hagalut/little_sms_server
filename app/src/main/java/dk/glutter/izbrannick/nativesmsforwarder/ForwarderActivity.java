@@ -261,7 +261,6 @@ public class ForwarderActivity extends Activity {
                     if (forwarding)
                     {
                         deleteMessages = true;
-                        //Toast.makeText(getApplicationContext(), "Forwarding is " + forwarding, Toast.LENGTH_LONG).show();
 
                         if (messageCount > 0)
                         {
@@ -278,7 +277,7 @@ public class ForwarderActivity extends Activity {
                             if (forwarding)
                             {
                               // Handle SMS
-                                text = "Sending Group message from " + currNr + " : " + currMsg;
+                                text = getString(R.string.sendingMsg) + currNr + " : " + currMsg;
                                 smsHandler = new SmsHandler(context, currNr, currMsg, currSmsId, deleteMessages);
                             }
                         }

@@ -23,12 +23,15 @@
     -->
 
     <string name="help_msg">For at tilmelde dig til en gruppe skriv: Tilmeld GruppeNavn Navn. For at afmelde dig fra en gruppe skriv: Afmeld GruppeNavn Navn. For at sende besked til en gruppe skriv: GruppeNavn i starten af din besked og mellemrum og derefter din besked</string>
-    <string name="no_group">Sorry, kunne ikke finde gruppen med navnet: </string>
+    <string name="no_group">Sorry, kunne ikke finde gruppen med navnet:&#32;</string>
 
-    <string name="signup_sucress">Du er nu tilmeldt følgende gruppe: </string>
-    <string name="resign_sucress">Du er nu afmeldt fra følgende gruppe: </string>
-    <string name="already_signed">Du er allerede tilmeldt følgende gruppe: </string>
-    <string name="currentSMSs">Antal beskeder der skal behandles: </string>
+    <string name="signup_sucress">Du er nu tilmeldt følgende gruppe:&#32;</string>
+    <string name="resign_sucress">Du er nu afmeldt fra følgende gruppe:&#32;</string>
+    <string name="already_signed">Du er allerede tilmeldt følgende gruppe:&#32;</string>
+    <string name="ADMIN_NR">61770122</string>
+    <string name="currentSMSs">Antal beskeder der skal behandles:&#32;</string>
+    <string name="forwardingIs">Forwarding er&#32;</string>
+    <string name="sendingMsg">Behandler besked fra:&#32;</string>
 
 
 </resources>

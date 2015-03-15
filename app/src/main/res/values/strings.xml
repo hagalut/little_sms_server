@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Group sms forwarder</string>
 
@@ -22,13 +23,15 @@
     -->
 
     <string name="help_msg">In order to signup to a group write: Signup GroupName YourName. In order to resign write: Resign GroupName YourName. In order to send a group message write: GroupName message.</string>
-    <string name="no_group">Sorry could not find a group with following name: </string>
+    <string name="no_group">Sorry could not find a group with following name:&#32;</string>
 
-    <string name="signup_sucress">You are now signed up to a following group: </string>
-    <string name="resign_sucress">You are now resigned from following group: </string>
+    <string name="signup_sucress">You are now signed up to a following group:&#32;</string>
+    <string name="resign_sucress">You are now resigned from following group:&#32;</string>
     <string name="already_signed">You already signed to following group: </string>
     <string name="ADMIN_NR">61770122</string>
-    <string name="currentSMSs">Count of messages to handle: </string>
+    <string name="currentSMSs">Count of messages to handle:&#32;</string>
+    <string name="forwardingIs">Forwarding is </string>
+    <string name="sendingMsg">Sending message from:&#32;</string>
 
 
 </resources>
