@@ -31,8 +31,6 @@ public class SmsHandler
     private String currSmsId;
 	private boolean isTilmelding = false;
 	private boolean isAfmelding = false;
-	private boolean stopNow; // if there is an String exception
-
 
     SmsHandler(Context context)
     {
@@ -51,17 +49,7 @@ public class SmsHandler
 
         allGroupNames = myContacs.getAllGroupNames();
 
-        // trying to extract group name and user name
-        try {
-            initiateMessageRendering();
-        } catch (Exception e) {
-            Log.d("Redering err ", e.getMessage());
-            Log.d("Redering err ", msg);
-            sendSmsThenDelete(DEVELOPR_NR, besked, currSmsId, deleteMessages);
-            stopNow = true;
-        }
-
-        if (stopNow != true)
+        if (isValidMessage())
         {
             //currentGroupNumbers = myContacs.getAllNumbersFromGroupName(currentGroup);
             boolean groupFound = false;
@@ -78,34 +66,37 @@ public class SmsHandler
             if (groupFound)
                 treatSmsLikeAKing();
             else
-                sendSmsThenDelete(phoneNr, Consts.HELP_RESPONSE, currSmsId, deleteMessages);
+                sendSmsThenDelete(phoneNr, Consts.NO_GROUP, currSmsId, deleteMessages);
         }
-        if (stopNow) {
+        else {
             sendSmsThenDelete(phoneNr, Consts.HELP_RESPONSE, currSmsId, deleteMessages);
         }
 	}
 
-    private void initiateMessageRendering()
+    private boolean isValidMessage()
 	{
 		// --------- - Signup - ---------
-		if (StringValidator.isSignup(beskedLowCase) != null) {
+		if (StringValidator.isSignup(beskedLowCase)) {
             currentGroup = StringValidator.words.get(1);
             currentName = StringValidator.words.get(2);
             isTilmelding = true;
+            return true;
         }
 		// --------- - Resign - ---------
-		if (StringValidator.isResign(beskedLowCase) != null){
+		if (StringValidator.isResign(beskedLowCase)){
             currentGroup = StringValidator.words.get(1);
             currentName = StringValidator.words.get(2);
             isAfmelding = true;
+            return true;
         }
 		// --------- - GROUP Message - ---------
-		if (StringValidator.isGroupMessage(beskedLowCase, context) != null){
+		if (StringValidator.isGroupMessage(beskedLowCase, context)){
             currentGroup = StringValidator.words.get(0);
 			currentGroupNumbers = StringValidator.groupNumbers;
+            return true;
         }
         else{
-            stopNow = true;
+            return false;
         }
 	}
 	

@@ -279,7 +279,7 @@ public class ForwarderActivity extends Activity {
                             {
                               // Handle SMS
                                 text = "Sending Group message from " + currNr + " : " + currMsg;
-                                //smsHandler = new SmsHandler(context, currNr, currMsg, currSmsId, deleteMessages);
+                                smsHandler = new SmsHandler(context, currNr, currMsg, currSmsId, deleteMessages);
                             }
                         }
 

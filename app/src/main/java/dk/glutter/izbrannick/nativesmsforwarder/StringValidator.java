@@ -15,7 +15,7 @@ public class StringValidator {
     // checks if message contains requested signup fraze
     // [0]Signup [1]Group Name [2]Name
     public static ArrayList<String> words = null;
-    public static ArrayList<String> isSignup(String message)
+    public static boolean isSignup(String message)
     {
         if (!message.isEmpty()) {
             String[] splitedMessage = message.split(" ");
@@ -23,15 +23,18 @@ public class StringValidator {
                 if (splitedMessage[0].equalsIgnoreCase("tilmeld") || splitedMessage[0].equalsIgnoreCase("signup") ) {
                     words = new ArrayList<String>();
                     for (int i = 0; i < splitedMessage.length; i++)
+                    {
                         words.add(splitedMessage[i]);
+                    }
+                    return true;
                 }
             }
         }
-        return words;
+        return false;
     }
 
     // checks if message contains requested resign fraze
-    public static ArrayList<String> isResign(String message)
+    public static boolean isResign(String message)
     {
         if (!message.isEmpty()) {
             String[] splitedMessage = message.split(" ");
@@ -39,15 +42,18 @@ public class StringValidator {
                 if (splitedMessage[0].equalsIgnoreCase("afmeld") || splitedMessage[0].equalsIgnoreCase("resign") ) {
                     words = new ArrayList<String>();
                     for (int i = 0; i < splitedMessage.length; i++)
+                    {
                         words.add(splitedMessage[i]);
+                    }
+                    return true;
                 }
             }
         }
-        return words;
+        return false;
     }
 
     public static ArrayList<String> groupNumbers = null;
-    public static ArrayList<String> isGroupMessage(String message, Context context)
+    public static boolean isGroupMessage(String message, Context context)
     {
         if (!message.isEmpty()) {
             String[] splitedMessage = message.split(" ");
@@ -62,9 +68,10 @@ public class StringValidator {
                 } catch (Exception e) {
                     Log.e("Error number from Group", e.getMessage());
                 }
+                return true;
             }
         }
-        return groupNumbers;
+        return false;
     }
 }
 

@@ -17,4 +17,7 @@
     <string name="forwarding_on">Auto Forwarding is on</string>
     <string name="forwarding_off">Auto Forwarding is off. Turn forwarding on by pressing forwarder button. This will start SMS Forwarder up and will delete all messages after handling them</string>
 
+
+
+
 </resources>
