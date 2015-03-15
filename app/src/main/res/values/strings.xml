@@ -10,10 +10,11 @@
     <string name="info_usage_0"> - gsm and internet connection.</string>
     <string name="info_usage_1"> - register this phone to a google account - gives you option to administrate users and groups through gmail/google contacts.</string>
     <string name="info_usage_2"> - for backup of SMSs just install SMS Backup+ app - no further  actions needed.</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">How To Info</string>
 
     <string name="title_activity_forwarder">ForwarderActivity</string>
     <string name="dummy_button">Sync Contacts Now</string>
-    <string name="dummy_content">Turn forwarding on by pressing forwarder button. This will start SMS Forwarder up and will delete all messages after handling them</string>
+    <string name="forwarding_on">Auto Forwarding is on</string>
+    <string name="forwarding_off">Auto Forwarding is off. Turn forwarding on by pressing forwarder button. This will start SMS Forwarder up and will delete all messages after handling them</string>
 
 </resources>

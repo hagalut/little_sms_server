@@ -1,18 +1,20 @@
-package dk.glutter.izbrannick.nativesmsforwarder;
+package dk.glutter.izbrannick.nativesmsforwarder.util;
 
 import android.content.Context;
 import android.content.Intent;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 
+import dk.glutter.izbrannick.nativesmsforwarder.ForwarderActivity;
+
 /**
  * Created by izbrannick on 09-03-2015.
  */
-class WebAppInterface {
+public class WebAppInterface {
     Context mContext;
 
     /** Instantiate the interface and set the context */
-    WebAppInterface(Context c) {
+    public WebAppInterface(Context c) {
         mContext = c;
     }
 

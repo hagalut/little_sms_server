@@ -1,6 +1,5 @@
 package dk.glutter.izbrannick.nativesmsforwarder;
 
-import dk.glutter.izbrannick.nativesmsforwarder.contacts.ContactsHandler;
 import dk.glutter.izbrannick.nativesmsforwarder.otherapps.ThirdPartyApp;
 import dk.glutter.izbrannick.nativesmsforwarder.util.SystemUiHider;
 
@@ -10,10 +9,13 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -58,6 +60,7 @@ public class ForwarderActivity extends Activity {
      * The instance of the {@link SystemUiHider} for this activity.
      */
     private SystemUiHider mSystemUiHider;
+
     private Context context = null;
     TextView tv;
 
@@ -135,13 +138,9 @@ public class ForwarderActivity extends Activity {
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
+        findViewById(R.id.forwarder_toggl).setOnClickListener(toggleBtnTouchListener);
 
-
-
-        // Run()  does all the magic
-        run();
-
-        /*
+        /* Greate a group
         ContactsHandler contactsHandler = new ContactsHandler(context);
         contactsHandler.createGoogleGroup("GROUP1:");
         */
@@ -157,11 +156,29 @@ public class ForwarderActivity extends Activity {
         delayedHide(100);
     }
 
-
     @Override
     public void onBackPressed() {
-        MainActivity.isNavigatingFromOtherActivity = true;
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -176,6 +193,20 @@ public class ForwarderActivity extends Activity {
                 delayedHide(AUTO_HIDE_DELAY_MILLIS);
             }
             return false;
+        }
+    };
+
+    View.OnClickListener toggleBtnTouchListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            forwarding = ((ToggleButton) findViewById(R.id.forwarder_toggl)).isChecked();
+            if (forwarding) {
+                tv.setText(getString(R.string.forwarding_on));
+                run();
+            }else
+            {
+                tv.setText(getString(R.string.forwarding_off));
+            }
         }
     };
 
@@ -196,10 +227,9 @@ public class ForwarderActivity extends Activity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    /*
+    /**
     * Forwarding functions
     * */
-
     String text = "";
     String currSmsId = "";
     String currMsg = "";
@@ -207,7 +237,7 @@ public class ForwarderActivity extends Activity {
     int messageCount = 0;
     Handler handler;
     SmsHandler smsHandler;
-    boolean forwarding = false;
+    boolean forwarding;
     boolean deleteMessages = false;
 
 
@@ -228,7 +258,6 @@ public class ForwarderActivity extends Activity {
                     messageCount = getAllSms().size();
                     currSmsId = null;
 
-                    forwarding = ((ToggleButton) findViewById(R.id.forwarder_toggl)).isChecked();
                     if (forwarding)
                     {
                         deleteMessages = true;
@@ -246,11 +275,11 @@ public class ForwarderActivity extends Activity {
                             ThirdPartyApp la = new ThirdPartyApp();
                             la.startAppAction(context, "com.zegoggles.smssync.BACKUP");
 
-                            if (forwarding == true)
+                            if (forwarding)
                             {
                               // Handle SMS
                                 text = "Sending Group message from " + currNr + " : " + currMsg;
-                                smsHandler = new SmsHandler(context, currNr, currMsg, currSmsId, deleteMessages);
+                                //smsHandler = new SmsHandler(context, currNr, currMsg, currSmsId, deleteMessages);
                             }
                         }
 
@@ -269,6 +298,10 @@ public class ForwarderActivity extends Activity {
 
     }
 
+    /**
+     * API greater than 10 handling
+     * @return
+     */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private List<Sms> getAllSms() {
 
@@ -286,8 +319,6 @@ public class ForwarderActivity extends Activity {
             Cursor c = cl.loadInBackground();
 
             int totalSMS = c.getCount();
-/*
-*/
             if (c.moveToFirst()) {
                 for (int i = 0; i < totalSMS; i++) {
 
@@ -317,6 +348,10 @@ public class ForwarderActivity extends Activity {
         return lstSms;
     }
 
+    /**
+     * API 10 handling
+     * @return
+     */
     @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
     public List<Sms> getAllSmsAPI10() {
         List<Sms> lstSms = new ArrayList<Sms>();
@@ -327,8 +362,6 @@ public class ForwarderActivity extends Activity {
         Cursor c = cr.query(message, null, null, null, null);
 
         this.startManagingCursor(c);
-
-
         int totalSMS = c.getCount();
 
         if (c.moveToFirst()) {
@@ -354,6 +387,17 @@ public class ForwarderActivity extends Activity {
         c.close();
 
         return lstSms;
+    }
+
+    /**
+     * Checks if network is available
+     * @return
+     */
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
  }

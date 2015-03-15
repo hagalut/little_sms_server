@@ -4,6 +4,7 @@ package dk.glutter.izbrannick.nativesmsforwarder;
  * Created by izbrannick on 27-01-2015.
  */
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.provider.CallLog;
 
