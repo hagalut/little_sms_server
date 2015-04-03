@@ -29,27 +29,81 @@
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="94dp"
-            android:layout_gravity="center|top">
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
 
-            <TextView
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/forwardingIs"
-                android:id="@+id/textView"
-                android:layout_gravity="bottom|left" />
+                android:layout_gravity="center|top">
 
-            <ToggleButton
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/forwardingIs"
+                    android:id="@+id/textView"
+                    android:layout_gravity="center" />
+
+                <ToggleButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="New ToggleButton"
+                    android:id="@+id/forwarder_toggl"
+                    android:checked="false"
+                    android:layout_gravity="center" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New ToggleButton"
-                android:id="@+id/forwarder_toggl"
-                android:layout_gravity="bottom|right"
-                android:checked="false" />
+                android:layout_gravity="center|top">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/deletingIs"
+                    android:id="@+id/textView3"
+                    android:layout_gravity="center" />
+
+                <ToggleButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="delete_messages"
+                    android:id="@+id/toggleButton_delete_smss"
+                    android:layout_gravity="center"
+                    android:checked="false"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|top">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/respondUsersIs"
+                    android:id="@+id/textView4"
+                    android:layout_gravity="center" />
+
+                <ToggleButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="respondUsersIs"
+                    android:id="@+id/toggleButton_respond_users"
+                    android:layout_gravity="center"
+                    android:checked="false"
+                    android:gravity="center" />
+            </LinearLayout>
         </LinearLayout>
 
     </FrameLayout>

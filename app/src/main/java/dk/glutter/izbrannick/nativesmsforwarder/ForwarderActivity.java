@@ -6,20 +6,25 @@ import dk.glutter.izbrannick.nativesmsforwarder.util.SystemUiHider;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
@@ -62,7 +67,23 @@ public class ForwarderActivity extends Activity {
     private SystemUiHider mSystemUiHider;
 
     private Context context = null;
-    TextView tv;
+    private TextView tv;
+    private ToggleButton forward_toggle_btn;
+    private ToggleButton delete_sms_toggle_btn;
+    private ToggleButton respond_usr_toggle_btn;
+    private SharedPreferences.Editor editor;
+    private SharedPreferences preferences;
+
+    private String text = "";
+    private String currSmsId = "";
+    private String currMsg = "";
+    private String currNr = "";
+    private int messageCount = 0;
+    private Handler handler;
+    private SmsHandler smsHandler;
+    private boolean forwarding;
+    private boolean deleteMessages;
+    private boolean respondMessages;
 
 
     @Override
@@ -75,9 +96,22 @@ public class ForwarderActivity extends Activity {
 
         this.context = getApplicationContext();
 
+        preferences = context.getApplicationContext().getSharedPreferences("LittleSmsBroadcaster", MODE_PRIVATE);
+        forwarding = preferences.getBoolean("forwarding", false);
+        deleteMessages = preferences.getBoolean("deleteMessages", false);
+        respondMessages = preferences.getBoolean("respondMessages", false);
+
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
         tv = (TextView) findViewById(R.id.fullscreen_content);
+
+        forward_toggle_btn = ((ToggleButton) findViewById(R.id.forwarder_toggl));
+        delete_sms_toggle_btn = ((ToggleButton) findViewById(R.id.toggleButton_delete_smss));
+        respond_usr_toggle_btn = ((ToggleButton) findViewById(R.id.toggleButton_respond_users));
+
+        forward_toggle_btn.setChecked(forwarding);
+        delete_sms_toggle_btn.setChecked(deleteMessages);
+        respond_usr_toggle_btn.setChecked(respondMessages);
 
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
@@ -139,6 +173,8 @@ public class ForwarderActivity extends Activity {
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
         findViewById(R.id.forwarder_toggl).setOnClickListener(toggleBtnTouchListener);
+        findViewById(R.id.toggleButton_delete_smss).setOnClickListener(toggleDeleteBtnTouchListener);
+        findViewById(R.id.toggleButton_respond_users).setOnClickListener(toggleRespondBtnTouchListener);
 
         /* Greate a group
         ContactsHandler contactsHandler = new ContactsHandler(context);
@@ -199,14 +235,42 @@ public class ForwarderActivity extends Activity {
     View.OnClickListener toggleBtnTouchListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            forwarding = ((ToggleButton) findViewById(R.id.forwarder_toggl)).isChecked();
+            forwarding = forward_toggle_btn.isChecked();
+
+            editor = getSharedPreferences("LittleSmsBroadcaster", MODE_PRIVATE).edit();
+            editor.putBoolean("forwarding", forwarding); // value to store
+            editor.commit();
+
             if (forwarding) {
                 tv.setText(getString(R.string.forwarding_on));
-                run();
+                //new LongOperation().execute("");
             }else
             {
+                forward_toggle_btn.setChecked(false);
                 tv.setText(getString(R.string.forwarding_off));
             }
+        }
+    };
+
+    View.OnClickListener toggleDeleteBtnTouchListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            deleteMessages = delete_sms_toggle_btn.isChecked();
+
+            editor = getSharedPreferences("LittleSmsBroadcaster", MODE_PRIVATE).edit();
+            editor.putBoolean("deleteMessages", deleteMessages); // value to store
+            editor.commit();
+        }
+    };
+
+    View.OnClickListener toggleRespondBtnTouchListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            respondMessages = respond_usr_toggle_btn.isChecked();
+
+            editor = getSharedPreferences("LittleSmsBroadcaster", MODE_PRIVATE).edit();
+            editor.putBoolean("respondMessages", respondMessages); // value to store
+            editor.commit();
         }
     };
 
@@ -227,74 +291,37 @@ public class ForwarderActivity extends Activity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    /**
-    * Forwarding functions
-    * */
-    String text = "";
-    String currSmsId = "";
-    String currMsg = "";
-    String currNr = "";
-    int messageCount = 0;
-    Handler handler;
-    SmsHandler smsHandler;
-    boolean forwarding;
-    boolean deleteMessages = false;
+    private class LongOperation extends AsyncTask<String, Void, String> {
 
-
-    private void run()
-    {
-        Runnable runnable = null;
-
-        if(runnable != null)
-            handler.removeCallbacks(runnable);
-
-        if(handler == null)
-        {
-            handler = new Handler();
-            runnable = new Runnable()
-            {
-                public void run()
-                {
-                    messageCount = getAllSms().size();
-                    currSmsId = null;
-
-                    if (forwarding)
-                    {
-                        deleteMessages = true;
-
-                        if (messageCount > 0)
-                        {
-                            currMsg = getAllSms().get(0).getMsg();
-                            currSmsId = getAllSms().get(0).getId();
-                            currNr = getAllSms().get(0).getAddress();
-
-                            text = "Message from " + "  " + currNr + ": " + currMsg;
-
-                            //BACKUP SMS - sync with SMS Backup PLus
-                            ThirdPartyApp la = new ThirdPartyApp();
-                            la.startAppAction(context, "com.zegoggles.smssync.BACKUP");
-
-                            if (forwarding)
-                            {
-                              // Handle SMS
-                                text = getString(R.string.sendingMsg) + currNr + " : " + currMsg;
-                                smsHandler = new SmsHandler(context, currNr, currMsg, currSmsId, deleteMessages);
-                            }
-                        }
-
-                        if (currSmsId == null)
-                            text = getString(R.string.currentSMSs);
-
-                        tv.setText(text);
-                    }
-
-                    handler.postDelayed(this, 60000); // now is every 1 minutes
-                }
-            };
-
-            handler.postDelayed(runnable , 3300); // Every 120000 ms (2 minutes)
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                run();
+            } catch (Exception e) {
+                Thread.interrupted();
+                Log.d("AAAAAA", e.getMessage());
+            }
+            return "Executed";
         }
 
+        @Override
+        protected void onPostExecute(String result) {
+            //TextView txt = (TextView) findViewById(R.id.output);
+            //txt.setText("Executed"); // txt.setText(result);
+            // might want to change "executed" for the returned string passed
+            // into onPostExecute() but that is upto you
+            Toast.makeText(context, " onPostExecute ", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            Toast.makeText(context, " onPreExecute ", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            Toast.makeText(context, " onProgressUpdate ", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -309,7 +336,7 @@ public class ForwarderActivity extends Activity {
 
         if (currentApiVersion > 10) {
 
-            Sms objSms = new Sms();
+            Sms objSms;
             Uri message = Uri.parse("content://sms/");
 
             CursorLoader cl = new CursorLoader(context);
@@ -334,7 +361,9 @@ public class ForwarderActivity extends Activity {
                         objSms.setFolderName("sent");
                     }
 
-                    lstSms.add(objSms);
+                    if (objSms.getReadState().equals("0")){
+                        lstSms.add(objSms);
+                    }
                     c.moveToNext();
                 }
             }
@@ -386,6 +415,205 @@ public class ForwarderActivity extends Activity {
         c.close();
 
         return lstSms;
+    }
+
+    /**
+     * Fetches a list of unread messages from the system database
+     *
+     * @param context
+     *            app context
+     * @return ArrayList of SmsMmsMessage
+     */
+
+    // Content URIs for SMS app, these may change in future SDK
+    public static final Uri MMS_SMS_CONTENT_URI = Uri.parse("content://mms-sms/");
+    private static final String UNREAD_CONDITION = "read=1";
+    public static final Uri SMS_CONTENT_URI = Uri.parse("content://sms/");
+    public static final Uri SMS_INBOX_CONTENT_URI = Uri.withAppendedPath(SMS_CONTENT_URI, "inbox");
+    public static final int READ_THREAD = 1;
+    public static final Uri MMS_CONTENT_URI = Uri.parse("content://mms/");
+    public static final Uri MMS_INBOX_CONTENT_URI = Uri.withAppendedPath(MMS_CONTENT_URI, "inbox");
+
+    public static ArrayList<Sms> getUnreadMessages(Context context) {
+        ArrayList<Sms> messages = null;
+
+        final String[] projection =
+                new String[] { "_id", "thread_id", "address", "date", "body" };
+        String selection = UNREAD_CONDITION;
+        String[] selectionArgs = null;
+        final String sortOrder = "date ASC";
+
+        // Create cursor
+        Cursor cursor = context.getContentResolver().query(
+                SMS_INBOX_CONTENT_URI,
+                projection,
+                selection,
+                selectionArgs,
+                sortOrder);
+
+        long messageId;
+        long threadId;
+        String address;
+        long timestamp;
+        String body;
+        Sms message;
+
+        if (cursor != null) {
+            try {
+                int count = cursor.getCount();
+                if (count > 0) {
+                    messages = new ArrayList<Sms>(count);
+                    while (cursor.moveToNext()) {
+                        messageId = cursor.getLong(0);
+                        threadId = cursor.getLong(1);
+                        address = cursor.getString(2);
+                        timestamp = cursor.getLong(3);
+                        body = cursor.getString(4);
+
+                        message = new Sms();
+                        message.setId( String.valueOf(messageId) );
+                        message.setThreadId(String.valueOf(threadId));
+                        message.setAddress(address);
+                        message.setMsg(body);
+                        message.setReadState(cursor.getString(cursor.getColumnIndex("read")));
+                        message.setTime( String.valueOf(timestamp) );
+
+                        messages.add(message);
+                    }
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        return messages;
+    }
+
+    /**
+     * Marks a specific message as read
+     */
+    synchronized public void setMessageRead(
+            long messageId, int messageType) {
+
+        if (messageId > 0) {
+            ContentValues values = new ContentValues(1);
+            values.put("read", READ_THREAD);
+
+            Uri messageUri;
+
+            if (Sms.MESSAGE_TYPE_MMS == messageType) {
+                // Used to use URI of MMS_CONTENT_URI and it wasn't working, not sure why
+                // this is diff to SMS
+                messageUri = Uri.withAppendedPath(MMS_INBOX_CONTENT_URI, String.valueOf(messageId));
+            } else if (Sms.MESSAGE_TYPE_SMS == messageType) {
+                messageUri = Uri.withAppendedPath(SMS_CONTENT_URI, String.valueOf(messageId));
+            } else {
+                return;
+            }
+
+            // Log.v("messageUri for marking message read: " + messageUri.toString());
+
+            ContentResolver cr = context.getContentResolver();
+            int result;
+            try {
+                result = cr.update(messageUri, values, null, null);
+            } catch (Exception e) {
+                result = 0;
+            }
+            if (BuildConfig.DEBUG);
+        }
+    }
+
+    /**
+     * Marks a specific message as unread
+     */
+    synchronized public void setMessageUnRead(
+            long messageId, int messageType) {
+
+        if (messageId > 0) {
+            ContentValues values = new ContentValues(1);
+            values.put("read", 0);
+
+            Uri messageUri;
+
+            if (Sms.MESSAGE_TYPE_MMS == messageType) {
+                // Used to use URI of MMS_CONTENT_URI and it wasn't working, not sure why
+                // this is diff to SMS
+                messageUri = Uri.withAppendedPath(MMS_INBOX_CONTENT_URI, String.valueOf(messageId));
+            } else if (Sms.MESSAGE_TYPE_SMS == messageType) {
+                messageUri = Uri.withAppendedPath(SMS_CONTENT_URI, String.valueOf(messageId));
+            } else {
+                return;
+            }
+
+            // Log.v("messageUri for marking message read: " + messageUri.toString());
+
+            ContentResolver cr = context.getContentResolver();
+            int result;
+            try {
+                result = cr.update(messageUri, values, null, null);
+            } catch (Exception e) {
+                result = 0;
+            }
+            if (BuildConfig.DEBUG);
+        }
+    }
+
+    private void run()
+    {
+        Runnable runnable = null;
+
+        if(runnable != null)
+            handler.removeCallbacks(runnable);
+
+        if(handler == null)
+        {
+            handler = new Handler();
+            runnable = new Runnable()
+            {
+                public void run()
+                {
+                    List<Sms> messagess = getAllSms();
+                    messageCount = messagess.size();
+                    currSmsId = null;
+
+                    if (forwarding)
+                    {
+                        if (messageCount > 0)
+                        {
+                            //TODO: Get all unreaded messages
+
+                            currMsg = messagess.get(0).getMsg();
+                            currSmsId = messagess.get(0).getId();
+                            currNr = messagess.get(0).getAddress();
+
+                            text = "Message from " + "  " + currNr + ": " + currMsg;
+
+                            //BACKUP SMS - sync with SMS Backup PLus
+                            ThirdPartyApp la = new ThirdPartyApp();
+                            la.startAppAction(context, "com.zegoggles.smssync.BACKUP");
+
+                            if (forwarding)
+                            {
+                                // Handle SMS
+                                text = getString(R.string.sendingMsg) + currNr + " : " + currMsg;
+                                smsHandler = new SmsHandler(context, currNr, currMsg, currSmsId, deleteMessages, respondMessages);
+                                setMessageRead(Long.valueOf(currSmsId), Sms.MESSAGE_TYPE_SMS);
+                            }
+                        }
+
+                        if (currSmsId == null)
+                            text = getString(R.string.currentSMSs);
+
+                        tv.setText(text);
+                    }
+
+                    handler.postDelayed(this, 60000); // now is every 1 minutes
+                }
+            };
+
+            handler.postDelayed(runnable , 3300); // Every 120000 ms (2 minutes)
+        }
+
     }
 
     /**

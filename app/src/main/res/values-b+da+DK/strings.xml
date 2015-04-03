@@ -18,6 +18,9 @@
     <string name="forwarding_on">Auto Forwarding er aktiveret</string>
     <string name="forwarding_off">Auto Forwarding er deaktiveret. Tænd forwarding ved at trykke på forwarder knap. Knappen vil starte forvarding og vil fjerne alle lokale beskeder fra telefonen.</string>
 
+    <string name="signup">Tilmeld</string>
+    <string name="resign">Afmeld</string>
+
     <!--
     Response
     -->
@@ -30,8 +33,10 @@
     <string name="already_signed">Du er allerede tilmeldt følgende gruppe:&#32;</string>
     <string name="ADMIN_NR">61770122</string>
     <string name="currentSMSs">Antal beskeder der skal behandles:&#32;</string>
-    <string name="forwardingIs">Forwarding er&#32;</string>
+    <string name="forwardingIs">Forwarding er:&#32;</string>
     <string name="sendingMsg">Behandler besked fra:&#32;</string>
+    <string name="deletingIs">Fjernelse af smser efter behandling er:&#32;</string>
+    <string name="respondUsersIs">Besvar alle sms beskeder er:&#32;</string>
 
 
 </resources>

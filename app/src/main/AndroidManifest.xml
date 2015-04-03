@@ -46,7 +46,20 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_forwarder"
             android:theme="@style/FullscreenTheme" >
+
+
+
         </activity>
+
+        <receiver android:name="MyBroadcastReceiver" android:enabled="true" android:exported="true" android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="1000">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED">
+                </action>
+                <action android:name="dk.glutter.izbrannick.nativesmsforwarder.CUSTOM_INTENT"></action>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

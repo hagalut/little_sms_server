@@ -1,5 +1,7 @@
 package dk.glutter.izbrannick.nativesmsforwarder;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -17,6 +19,7 @@ public class SmsHandler
 	
 	private static Context context;
     private boolean deleteMessages;
+    private boolean respondMessages;
 
     private ContactsHandler myContacs;
 	private ArrayList<String> allGroupNames = null;
@@ -35,7 +38,7 @@ public class SmsHandler
         this.context = context;
     }
 
-    SmsHandler(Context context, String nr, String msg, String currSmsId, boolean deleteMessages)
+    SmsHandler(Context context, String nr, String msg, String currSmsId, boolean deleteMessages, boolean respondMessages)
 	{
 		this.context = context;
         this.currSmsId = currSmsId;
@@ -44,6 +47,7 @@ public class SmsHandler
 		besked = msg;
 		beskedLowCase = msg.toLowerCase();
         this.deleteMessages = deleteMessages;
+        this.respondMessages = deleteMessages;
 
         allGroupNames = myContacs.getAllGroupNames();
 
@@ -61,26 +65,50 @@ public class SmsHandler
             if (groupFound)
                 treatSmsLikeAKing();
             else
+            {
+                if (respondMessages)
                 sendSmsThenDelete(phoneNr, context.getString(R.string.no_group), currSmsId, deleteMessages);
+            }
+
         }
         else {
+            if (respondMessages)
             sendSmsThenDelete(phoneNr, context.getString(R.string.help_msg), currSmsId, deleteMessages);
         }
 	}
 
     private boolean isValidMessage()
 	{
+        StringValidator.signup = context.getString(R.string.signup);
+        StringValidator.resign = context.getString(R.string.resign);
+
 		// --------- - Signup - ---------
 		if (StringValidator.isSignup(beskedLowCase)) {
             currentGroup = StringValidator.words.get(1);
-            currentName = StringValidator.words.get(2);
+
+            for (int i = 0; i <= StringValidator.words.size(); i++)
+            {
+                if (i == 2)
+                {
+                    currentName = StringValidator.words.get(2);
+                }
+                if (i == 3)
+                {
+                    currentName = StringValidator.words.get(2) + " " + StringValidator.words.get(3);
+                    break;
+                }else
+                {
+                    currentName = "No Name";
+                }
+            }
             isTilmelding = true;
             return true;
         }
 		// --------- - Resign - ---------
 		if (StringValidator.isResign(beskedLowCase)){
             currentGroup = StringValidator.words.get(1);
-            currentName = StringValidator.words.get(2);
+            // no name needed
+            // currentName = StringValidator.words.get(2);
             isAfmelding = true;
             return true;
         }
@@ -107,18 +135,22 @@ public class SmsHandler
                     myContacs.createGoogleContact(currentName, "", phoneNr, currentGroup);
 
                     Log.d("Signup sending", currentName);
-                    sendSmsThenDelete(phoneNr, context.getString(R.string.signup_sucress)
-                            + currentGroup + ". "
-                            + context.getString(R.string.help_msg) , currSmsId, deleteMessages);
+                    if (respondMessages) {
+                        sendSmsThenDelete(phoneNr, context.getString(R.string.signup_sucress)
+                                + currentGroup + ". "
+                                + context.getString(R.string.help_msg), currSmsId, deleteMessages);
+                    }
 
                     // force Sync phone contacts with gmail contacts
                     SyncContacts.requestSync(context);
                 }else
                 {
-                    Log.d("DENY Respond", currentName);
-                    sendSmsThenDelete(phoneNr, context.getString(R.string.already_signed)
-                            + currentGroup + ". "
-                            + context.getString(R.string.help_msg), currSmsId, deleteMessages);
+                    if (respondMessages) {
+                        Log.d("DENY Respond", currentName);
+                        sendSmsThenDelete(phoneNr, context.getString(R.string.already_signed)
+                                + currentGroup + ". "
+                                + context.getString(R.string.help_msg), currSmsId, deleteMessages);
+                    }
                 }
 
                 return;
@@ -141,8 +173,10 @@ public class SmsHandler
 				}
                 return;
 			}
-		}else
-			sendSmsThenDelete(phoneNr, context.getString(R.string.no_group), currSmsId, deleteMessages);
+		}else {
+            if (respondMessages)
+            sendSmsThenDelete(phoneNr, context.getString(R.string.no_group), currSmsId, deleteMessages);
+        }
 	}
 
 	public static boolean sendSmsThenDelete(final String aDestination, final String aMessageText, final String currSmsId, final boolean deleteMessages)
@@ -208,12 +242,15 @@ public class SmsHandler
         String failedMsg = phoneNr+": " + "SMS: " + besked;
         try {
             myContacs.deleteContactFromGroup( phoneNr, currentGroup);
+            if (respondMessages)
             sendSmsThenDelete(phoneNr,context.getString(R.string.resign_sucress) + currentGroup, currSmsId, deleteMessages);
         }catch (Exception e)
         {
             Log.d(failedMsg, e.getMessage());
+            if (respondMessages)
             sendSmsThenDelete(context.getString(R.string.ADMIN_NR), failedMsg, currSmsId, deleteMessages);
         }
 
 	}
+
 }
