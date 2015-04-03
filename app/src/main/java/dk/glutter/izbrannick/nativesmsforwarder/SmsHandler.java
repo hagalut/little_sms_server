@@ -125,75 +125,71 @@ public class SmsHandler
 		if (StringValidator.isGroupMessage(beskedLowCase, context)){
             currentGroup = StringValidator.words.get(0);
 			currentGroupNumbers = StringValidator.groupNumbers;
-            isGroupMsg = true;
+            if (currentGroupNumbers.size() > 0)
+                isGroupMsg = true;
             return true;
         }
         else{
             return false;
         }
 	}
-	
+
 	private void treatSmsLikeAKing()
 	{
-		if (currentGroup != null) {
-			
-			if (isTilmelding)
-			{
-                if ( !(myContacs.getAllNumbersFromGroupName(currentGroup).contains(phoneNr)) )
-                {
-                    Log.d("Creating contact", currentName +"-in-"+  currentGroup);
-                    myContacs.createGoogleContact(currentName, "", phoneNr, currentGroup);
+        //if (!(new LongOperation().getStatus().equals(AsyncTask.Status.RUNNING))) {
+            if (currentGroup != null) {
 
-                    Log.d("Signup sending", currentName);
-                    if (respondMessages) {
-                        new LongOperation().execute(phoneNr, context.getString(R.string.signup_sucress)
-                                + currentGroup + ". "
-                                + context.getString(R.string.help_msg), currSmsId);
-                        /*
-                        sendSmsThenDelete(phoneNr, context.getString(R.string.signup_sucress)
-                                + currentGroup + ". "
-                                + context.getString(R.string.help_msg), currSmsId, deleteMessages);
-                                */
+                if (isTilmelding) {
+                    if (!(myContacs.getAllNumbersFromGroupName(currentGroup).contains(phoneNr))) {
+                        Log.d("Creating contact", currentName + "-in-" + currentGroup);
+                        myContacs.createGoogleContact(currentName, "", phoneNr, currentGroup);
+
+                        Log.d("Signup sending", currentName);
+                        if (respondMessages) {
+                            new LongOperation().execute(phoneNr, context.getString(R.string.signup_sucress)
+                                    + currentGroup + ". "
+                                    + context.getString(R.string.help_msg), currSmsId);
+                            /*
+                            sendSmsThenDelete(phoneNr, context.getString(R.string.signup_sucress)
+                                    + currentGroup + ". "
+                                    + context.getString(R.string.help_msg), currSmsId, deleteMessages);
+                                    */
+                        }
+
+                        // force Sync phone contacts with gmail contacts
+                        SyncContacts.requestSync(context);
+                    } else {
+                        if (respondMessages) {
+                            Log.d("DENY Respond", currentName);
+                            new LongOperation().execute(phoneNr, context.getString(R.string.already_signed)
+                                    + currentGroup + ". "
+                                    + context.getString(R.string.help_msg), currSmsId);
+                            /*
+                            sendSmsThenDelete(phoneNr, context.getString(R.string.already_signed)
+                                    + currentGroup + ". "
+                                    + context.getString(R.string.help_msg), currSmsId, deleteMessages);
+                                    */
+                        }
                     }
 
-                    // force Sync phone contacts with gmail contacts
-                    SyncContacts.requestSync(context);
-                }else
-                {
-                    if (respondMessages) {
-                        Log.d("DENY Respond", currentName);
-                        new LongOperation().execute(phoneNr, context.getString(R.string.already_signed)
-                                + currentGroup + ". "
-                                + context.getString(R.string.help_msg), currSmsId);
-                        /*
-                        sendSmsThenDelete(phoneNr, context.getString(R.string.already_signed)
-                                + currentGroup + ". "
-                                + context.getString(R.string.help_msg), currSmsId, deleteMessages);
-                                */
-                    }
+                    return;
                 }
+                if (isAfmelding) {
+                    removeUser(phoneNr, currentGroup);
 
-                return;
-			}
-			if (isAfmelding)
-			{
-                removeUser(phoneNr, currentGroup);
+                    // force Sync with google contacts
+                    SyncContacts.requestSync(context);
 
-                // force Sync with google contacts
-                SyncContacts.requestSync(context);
+                    return;
+                }
+                if (isGroupMsg) {
+                    new LongOperation().execute(phoneNr, besked, currSmsId);
+                }
+            } else {
+                if (respondMessages)
+                    new LongOperation().execute(phoneNr, context.getString(R.string.no_group), currSmsId);
+            }
 
-                return;
-			}
-			else
-			{
-                    new LongOperation().execute(phoneNr,besked,currSmsId);
-					//sendSmsThenDelete(currentGroupNumbers.get(i), besked, currSmsId, deleteMessages);
-			}
-		}else {
-            if (respondMessages)
-                new LongOperation().execute(phoneNr,context.getString(R.string.no_group),currSmsId);
-            //sendSmsThenDelete(phoneNr, context.getString(R.string.no_group), currSmsId, deleteMessages);
-        }
 	}
 
     private class LongOperation extends AsyncTask<String, Void, String> {
@@ -201,23 +197,26 @@ public class SmsHandler
         ArrayList<String> iFragmentList;
 
         @Override
-        protected String doInBackground(String... params) {
+        protected String doInBackground(String... params)
+        {
             iFragmentList = smsManager.divideMessage (params[1]);
 
             try {
                 if (isGroupMsg) {
                     for (int i = 0; i < currentGroupNumbers.size(); i++) {
                         smsManager.sendMultipartTextMessage(currentGroupNumbers.get(i), null, iFragmentList, null, null);
+                        Log.i("Sending msg to:", currentGroupNumbers.get(i));
                     }
                 }else
                 {
                     smsManager.sendMultipartTextMessage(params[0], null, iFragmentList, null, null);
+                    Log.i("Send response to:", params[0]);
                 }
 
                 if (deleteMessages) {
                     // try ---------  DELETE SMS
                     try {
-                        // TODO: if failed to delete sms add sms ID to ignore list
+                        Log.i("Try delete sms id:", params[2]);
                         delete_thread(params[2]);
                     } catch (Exception e) {
                         Log.d("Error deleting SMS ", params[0]+ " messge: " + params[1]);
@@ -232,11 +231,6 @@ public class SmsHandler
 
         @Override
         protected void onPostExecute(String result) {
-            //TextView txt = (TextView) findViewById(R.id.output);
-            //txt.setText("Executed"); // txt.setText(result);
-            // might want to change "executed" for the returned string passed
-            // into onPostExecute() but that is upto you
-            //Toast.makeText(context, " onPostExecute ", Toast.LENGTH_SHORT).show();
             if (isGroupMsg) {
                 iFragmentList = smsManager.divideMessage("Beskeden blev sendt til:" + currentGroup + ". Tak for det.");
                 smsManager.sendMultipartTextMessage(phoneNr, null, iFragmentList, null, null);
@@ -255,6 +249,7 @@ public class SmsHandler
         protected void onProgressUpdate(Void... values) {
             //Toast.makeText(context, " onProgressUpdate ", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     public static void delete_thread( String _id)
