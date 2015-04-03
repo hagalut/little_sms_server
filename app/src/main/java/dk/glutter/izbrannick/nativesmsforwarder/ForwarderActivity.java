@@ -291,39 +291,6 @@ public class ForwarderActivity extends Activity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    private class LongOperation extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                run();
-            } catch (Exception e) {
-                Thread.interrupted();
-                Log.d("AAAAAA", e.getMessage());
-            }
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            //TextView txt = (TextView) findViewById(R.id.output);
-            //txt.setText("Executed"); // txt.setText(result);
-            // might want to change "executed" for the returned string passed
-            // into onPostExecute() but that is upto you
-            Toast.makeText(context, " onPostExecute ", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        protected void onPreExecute() {
-            Toast.makeText(context, " onPreExecute ", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            Toast.makeText(context, " onProgressUpdate ", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     /**
      * API greater than 10 handling
      * @return
@@ -332,7 +299,7 @@ public class ForwarderActivity extends Activity {
     private List<Sms> getAllSms() {
 
         int currentApiVersion = Build.VERSION.SDK_INT;
-        List<Sms> lstSms = new ArrayList<Sms>();
+        List<Sms> lstSms = new ArrayList<>();
 
         if (currentApiVersion > 10) {
 
@@ -614,17 +581,6 @@ public class ForwarderActivity extends Activity {
             handler.postDelayed(runnable , 3300); // Every 120000 ms (2 minutes)
         }
 
-    }
-
-    /**
-     * Checks if network is available
-     * @return
-     */
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
  }

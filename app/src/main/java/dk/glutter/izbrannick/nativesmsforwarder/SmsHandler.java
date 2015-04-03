@@ -1,13 +1,12 @@
 package dk.glutter.izbrannick.nativesmsforwarder;
 
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Handler;
+import android.os.AsyncTask;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -30,8 +29,9 @@ public class SmsHandler
 	private String beskedLowCase;
 	private String currentGroup;
     private String currSmsId;
-	private boolean isTilmelding = false;
-	private boolean isAfmelding = false;
+	private boolean isTilmelding;
+    private boolean isAfmelding;
+    private boolean isGroupMsg;
 
     SmsHandler(Context context)
     {
@@ -47,7 +47,12 @@ public class SmsHandler
 		besked = msg;
 		beskedLowCase = msg.toLowerCase();
         this.deleteMessages = deleteMessages;
-        this.respondMessages = deleteMessages;
+        this.respondMessages = respondMessages;
+
+        currentGroupNumbers = null;
+        isTilmelding = false;
+        isAfmelding = false;
+        isGroupMsg = false;
 
         allGroupNames = myContacs.getAllGroupNames();
 
@@ -67,13 +72,19 @@ public class SmsHandler
             else
             {
                 if (respondMessages)
+                    new LongOperation().execute(phoneNr, context.getString(R.string.no_group), currSmsId);
+                    /*
                 sendSmsThenDelete(phoneNr, context.getString(R.string.no_group), currSmsId, deleteMessages);
+                */
             }
 
         }
         else {
             if (respondMessages)
+                new LongOperation().execute(phoneNr, context.getString(R.string.help_msg), currSmsId);
+                /*
             sendSmsThenDelete(phoneNr, context.getString(R.string.help_msg), currSmsId, deleteMessages);
+            */
         }
 	}
 
@@ -85,20 +96,18 @@ public class SmsHandler
 		// --------- - Signup - ---------
 		if (StringValidator.isSignup(beskedLowCase)) {
             currentGroup = StringValidator.words.get(1);
+            currentName = "No Name";
 
             for (int i = 0; i <= StringValidator.words.size(); i++)
             {
-                if (i == 2)
-                {
-                    currentName = StringValidator.words.get(2);
-                }
                 if (i == 3)
                 {
-                    currentName = StringValidator.words.get(2) + " " + StringValidator.words.get(3);
-                    break;
-                }else
+                    currentName = StringValidator.words.get(i-1);
+                }
+                if (i == 4)
                 {
-                    currentName = "No Name";
+                    currentName = StringValidator.words.get(2) + " " + StringValidator.words.get(i-1);
+                    break;
                 }
             }
             isTilmelding = true;
@@ -116,6 +125,7 @@ public class SmsHandler
 		if (StringValidator.isGroupMessage(beskedLowCase, context)){
             currentGroup = StringValidator.words.get(0);
 			currentGroupNumbers = StringValidator.groupNumbers;
+            isGroupMsg = true;
             return true;
         }
         else{
@@ -136,9 +146,14 @@ public class SmsHandler
 
                     Log.d("Signup sending", currentName);
                     if (respondMessages) {
+                        new LongOperation().execute(phoneNr, context.getString(R.string.signup_sucress)
+                                + currentGroup + ". "
+                                + context.getString(R.string.help_msg), currSmsId);
+                        /*
                         sendSmsThenDelete(phoneNr, context.getString(R.string.signup_sucress)
                                 + currentGroup + ". "
                                 + context.getString(R.string.help_msg), currSmsId, deleteMessages);
+                                */
                     }
 
                     // force Sync phone contacts with gmail contacts
@@ -147,9 +162,14 @@ public class SmsHandler
                 {
                     if (respondMessages) {
                         Log.d("DENY Respond", currentName);
+                        new LongOperation().execute(phoneNr, context.getString(R.string.already_signed)
+                                + currentGroup + ". "
+                                + context.getString(R.string.help_msg), currSmsId);
+                        /*
                         sendSmsThenDelete(phoneNr, context.getString(R.string.already_signed)
                                 + currentGroup + ". "
                                 + context.getString(R.string.help_msg), currSmsId, deleteMessages);
+                                */
                     }
                 }
 
@@ -166,51 +186,76 @@ public class SmsHandler
 			}
 			else
 			{
-				for (int i = 0; i < currentGroupNumbers.size(); i++)
-				{
-					sendSmsThenDelete(currentGroupNumbers.get(i), besked, currSmsId, deleteMessages);
-					Log.d("IMUSMS sending to", currentGroupNumbers.get(i));
-				}
-                return;
+                    new LongOperation().execute(phoneNr,besked,currSmsId);
+					//sendSmsThenDelete(currentGroupNumbers.get(i), besked, currSmsId, deleteMessages);
 			}
 		}else {
             if (respondMessages)
-            sendSmsThenDelete(phoneNr, context.getString(R.string.no_group), currSmsId, deleteMessages);
+                new LongOperation().execute(phoneNr,context.getString(R.string.no_group),currSmsId);
+            //sendSmsThenDelete(phoneNr, context.getString(R.string.no_group), currSmsId, deleteMessages);
         }
 	}
 
-	public static boolean sendSmsThenDelete(final String aDestination, final String aMessageText, final String currSmsId, final boolean deleteMessages)
-	{
+    private class LongOperation extends AsyncTask<String, Void, String> {
         final SmsManager smsManager = SmsManager.getDefault();
-        final ArrayList<String> iFragmentList = smsManager.divideMessage (aMessageText);
+        ArrayList<String> iFragmentList;
 
-        try {
-            Log.d("Sendign SMS to...", aDestination +" messge: "+  aMessageText);
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    smsManager.sendMultipartTextMessage(aDestination, null, iFragmentList, null, null);
+        @Override
+        protected String doInBackground(String... params) {
+            iFragmentList = smsManager.divideMessage (params[1]);
 
-                    if (deleteMessages) {
-                        // try ---------  DELETE SMS
-                        try {
-                            // TODO: if failed to delete sms add sms ID to ignore list
-                            delete_thread(currSmsId);
-                        } catch (Exception e) {
-                            Log.d("Error deleting SMS ", aDestination + " messge: " + aMessageText);
-                        }
+            try {
+                if (isGroupMsg) {
+                    for (int i = 0; i < currentGroupNumbers.size(); i++) {
+                        smsManager.sendMultipartTextMessage(currentGroupNumbers.get(i), null, iFragmentList, null, null);
                     }
-
+                }else
+                {
+                    smsManager.sendMultipartTextMessage(params[0], null, iFragmentList, null, null);
                 }
-            }, 3300);
+
+                if (deleteMessages) {
+                    // try ---------  DELETE SMS
+                    try {
+                        // TODO: if failed to delete sms add sms ID to ignore list
+                        delete_thread(params[2]);
+                    } catch (Exception e) {
+                        Log.d("Error deleting SMS ", params[0]+ " messge: " + params[1]);
+                    }
+                }
+            } catch (Exception e) {
+                Thread.interrupted();
+                Log.d("AAAAAA", e.getMessage());
+            }
+            return "Executed";
         }
-        catch (Exception e)
-        {
-            Log.d("Error sending SMS to...", aDestination +" messge: "+  aMessageText);
-            return false;
+
+        @Override
+        protected void onPostExecute(String result) {
+            //TextView txt = (TextView) findViewById(R.id.output);
+            //txt.setText("Executed"); // txt.setText(result);
+            // might want to change "executed" for the returned string passed
+            // into onPostExecute() but that is upto you
+            //Toast.makeText(context, " onPostExecute ", Toast.LENGTH_SHORT).show();
+            if (isGroupMsg) {
+                iFragmentList = smsManager.divideMessage("Beskeden blev sendt til:" + currentGroup + ". Tak for det.");
+                smsManager.sendMultipartTextMessage(phoneNr, null, iFragmentList, null, null);
+            }
         }
-		return true;
-	}
+
+        @Override
+        protected void onPreExecute() {
+            if (isGroupMsg) {
+                iFragmentList = smsManager.divideMessage("Din besked bliver sendt til:" + currentGroup + ". Du vil modtage en bekræftelses besked når den er færdig med at sende.");
+                smsManager.sendMultipartTextMessage(phoneNr, null, iFragmentList, null, null);
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            //Toast.makeText(context, " onProgressUpdate ", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     public static void delete_thread( String _id)
     {
@@ -243,12 +288,18 @@ public class SmsHandler
         try {
             myContacs.deleteContactFromGroup( phoneNr, currentGroup);
             if (respondMessages)
+                new LongOperation().execute(phoneNr, context.getString(R.string.resign_sucress) + currentGroup, currSmsId);
+            /*
             sendSmsThenDelete(phoneNr,context.getString(R.string.resign_sucress) + currentGroup, currSmsId, deleteMessages);
+            */
         }catch (Exception e)
         {
             Log.d(failedMsg, e.getMessage());
             if (respondMessages)
+                new LongOperation().execute(context.getString(R.string.ADMIN_NR), failedMsg, currSmsId);
+                /*
             sendSmsThenDelete(context.getString(R.string.ADMIN_NR), failedMsg, currSmsId, deleteMessages);
+            */
         }
 
 	}

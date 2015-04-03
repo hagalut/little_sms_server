@@ -20,12 +20,17 @@ public class MyBroadcastReceiver extends android.content.BroadcastReceiver {
 
     static String beskedOld = "";
     String currMsg = "";
-    String currNr ="";
+    String currNr = "";
     Context context;
     SharedPreferences preferences;
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        //BACKUP SMS - sync with SMS Backup PLus
+        ThirdPartyApp la = new ThirdPartyApp();
+        la.startAppAction(context, "com.zegoggles.smssync.BACKUP");
+
+
         SmsMessage[] msg = null;
         this.context = context;
         preferences = context.getApplicationContext().getSharedPreferences("LittleSmsBroadcaster", context.MODE_PRIVATE);
@@ -52,19 +57,12 @@ public class MyBroadcastReceiver extends android.content.BroadcastReceiver {
         } catch (Exception e) {
         }
 
-        Toast.makeText(context, " Receiver ", Toast.LENGTH_SHORT).show();
-
-        //BACKUP SMS - sync with SMS Backup PLus
-        ThirdPartyApp la = new ThirdPartyApp();
-        la.startAppAction(context, "com.zegoggles.smssync.BACKUP");
-
         if (!currMsg.equals(beskedOld)) {
 
-                boolean forwarding = preferences.getBoolean("forwarding", false);
-                boolean delete = preferences.getBoolean("deleteMessages", false);
-                boolean respond = preferences.getBoolean("respondMessages", false);
+            boolean forwarding = preferences.getBoolean("forwarding", false);
+            boolean delete = preferences.getBoolean("deleteMessages", false);
+            boolean respond = preferences.getBoolean("respondMessages", false);
 
-            //Toast.makeText(context, "...", Toast.LENGTH_LONG).show();
             if (forwarding) {
                 SmsHandler smsHandler = new SmsHandler(context, currNr, currMsg, "0", delete, respond);
             }
