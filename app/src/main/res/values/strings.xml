@@ -18,6 +18,9 @@
     <string name="forwarding_on">Auto Forwarding is on</string>
     <string name="forwarding_off">Auto Forwarding is off. Turn forwarding on by pressing forwarder button. This will start SMS Forwarder up and will delete all messages after handling them</string>
 
+    <string name="signup">Signup</string>
+    <string name="resign">Resign</string>
+
     <!--
     Response
     -->
@@ -27,11 +30,12 @@
 
     <string name="signup_sucress">You are now signed up to a following group:&#32;</string>
     <string name="resign_sucress">You are now resigned from following group:&#32;</string>
-    <string name="already_signed">You already signed to following group: </string>
+    <string name="already_signed">You already signed to following group:&#32;</string>
     <string name="ADMIN_NR">61770122</string>
     <string name="currentSMSs">Count of messages to handle:&#32;</string>
-    <string name="forwardingIs">Forwarding is </string>
+    <string name="forwardingIs">Forwarding is:&#32;</string>
     <string name="sendingMsg">Sending message from:&#32;</string>
-
+    <string name="deletingIs">Deleting messages after treatment is:&#32;</string>
+    <string name="respondUsersIs">Respond back to all messages is:&#32;</string>
 
 </resources>
