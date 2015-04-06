@@ -8,8 +8,8 @@ android {
         applicationId "dk.glutter.izbrannick.nativesmsforwarder"
         minSdkVersion 10
         targetSdkVersion 21
-        versionCode 11
-        versionName "More bug fixeS"
+        versionCode 14
+        versionName "Webview remove"
     }
     buildTypes {
         release {

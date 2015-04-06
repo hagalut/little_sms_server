@@ -11,20 +11,15 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
@@ -199,6 +194,14 @@ public class ForwarderActivity extends Activity {
 
     @Override
     protected void onResume() {
+        if (forwarding) {
+            tv.setText(getString(R.string.forwarding_on));
+            //new LongOperation().execute("");
+        }else
+        {
+            forward_toggle_btn.setChecked(false);
+            tv.setText(getString(R.string.forwarding_off));
+        }
         super.onResume();
     }
 
