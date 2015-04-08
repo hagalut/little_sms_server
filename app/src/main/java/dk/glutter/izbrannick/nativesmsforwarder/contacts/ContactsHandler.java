@@ -243,7 +243,7 @@ public class ContactsHandler {
 			String id = cursor.getString(cursor
 					.getColumnIndex(ContactsContract.Groups._ID));
 
-			if (title.equals(navn)) {
+			if (title.equalsIgnoreCase(navn)) {
 				String[] cProjection = { Contacts.DISPLAY_NAME,
 						GroupMembership.CONTACT_ID };
 

@@ -70,7 +70,7 @@ public class StringValidator {
                     try {
                         myContacs.getAllGroupNames();
 
-                        groupNumbers = myContacs.getAllNumbersFromGroupName(splitedMessage[0].toUpperCase());
+                        groupNumbers = myContacs.getAllNumbersFromGroupName(splitedMessage[0]);
                     } catch (Exception e) {
                         Log.e("Numbers from Group", e.getMessage());
                         return false;

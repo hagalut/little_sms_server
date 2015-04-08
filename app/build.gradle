@@ -8,8 +8,8 @@ android {
         applicationId "dk.glutter.izbrannick.nativesmsforwarder"
         minSdkVersion 10
         targetSdkVersion 21
-        versionCode 14
-        versionName "Webview remove"
+        versionCode 15
+        versionName "Android 5 update"
     }
     buildTypes {
         release {
