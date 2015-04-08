@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import dk.glutter.izbrannick.nativesmsforwarder.contacts.ContactsHandler;
+
 
 public class MainActivity extends ActionBarActivity {
 

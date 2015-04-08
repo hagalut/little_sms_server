@@ -64,6 +64,7 @@ public class SmsHandler
 
             for (int i = 0; i < allGroupNames.size(); i++) {
                     if (allGroupNames.get(i).equalsIgnoreCase(currentGroup)) {
+
                         currentGroup = allGroupNames.get(i);
                         groupFound = true;
                         break;

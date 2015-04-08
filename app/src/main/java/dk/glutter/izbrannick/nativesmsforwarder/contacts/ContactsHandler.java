@@ -178,40 +178,18 @@ public class ContactsHandler {
 	// ------------------------------------------------------- All Google Groups
 	// get all Group Names
 		public ArrayList<String> getAllGroupNames() {
-
-
-			String selection = ContactsContract.Groups.DELETED + "=? and "
-					+ ContactsContract.Groups.ACCOUNT_TYPE + "='com.google' and "
-					+ ContactsContract.Groups.GROUP_VISIBLE + "=?";
-
-
-			String[] selectionArgs = { "0", "1" };
-			Cursor cursor = context.getContentResolver().query(
-					ContactsContract.Groups.CONTENT_URI, null, selection,
-					selectionArgs, null);
-			cursor.moveToFirst();
-			int len = cursor.getCount();
-
-			ArrayList<String> groupNames = new ArrayList<String>();
-			for (int i = 0; i < len; i++) {
-				String title = cursor.getString(cursor
-						.getColumnIndex(ContactsContract.Groups.TITLE));
-
-				/*// to print out Group Type
-				title += " T: " + cursor.getString(cursor
-						.getColumnIndex(ContactsContract.Groups.ACCOUNT_TYPE));
-				*/
-
-				//if (cursor.getString(cursor.getColumnIndex(ContactsContract.Groups.ACCOUNT_TYPE)).startsWith("com.google")) {
-					groupNames.add(title);
-					//break; // if I want anly first group
-				//}
-
-				cursor.moveToNext();
+            ArrayList<String> groupList = new ArrayList<>();
+            String[] projection = new String[]{ContactsContract.Groups._ID,ContactsContract.Groups.TITLE};
+            Cursor cursor = context.getContentResolver().query(ContactsContract.Groups.CONTENT_URI,
+                    projection, null, null, null);
+            ArrayList<String> groupTitle = new ArrayList<String>();
+            while(cursor.moveToNext()){
+                //id = cursor.getString(cursor.getColumnIndex(ContactsContract.Groups._ID));
+                groupList.add(cursor.getString(cursor.getColumnIndex(ContactsContract.Groups.TITLE)));
 			}
 			cursor.close();
 
-			return groupNames;
+			return groupList;
 		}
 
 	// ------------------------------------------------------ get All phone #s
