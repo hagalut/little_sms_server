@@ -32,6 +32,7 @@ public class SmsHandler
 	private boolean isTilmelding;
     private boolean isAfmelding;
     private boolean isGroupMsg;
+    private boolean isCreateGroup;
 
     SmsHandler(Context context)
     {
@@ -53,6 +54,7 @@ public class SmsHandler
         isTilmelding = false;
         isAfmelding = false;
         isGroupMsg = false;
+        isCreateGroup = false;
 
         allGroupNames = myContacs.getAllGroupNames();
 
@@ -72,19 +74,13 @@ public class SmsHandler
             else
             {
                 if (respondMessages)
-                    new LongOperation().execute(phoneNr, context.getString(R.string.no_group), currSmsId);
-                    /*
-                sendSmsThenDelete(phoneNr, context.getString(R.string.no_group), currSmsId, deleteMessages);
-                */
+                    new LongOperation().execute(phoneNr, context.getString(R.string.no_group) + currentGroup, currSmsId);
             }
 
         }
         else {
             if (respondMessages)
                 new LongOperation().execute(phoneNr, context.getString(R.string.help_msg), currSmsId);
-                /*
-            sendSmsThenDelete(phoneNr, context.getString(R.string.help_msg), currSmsId, deleteMessages);
-            */
         }
 	}
 
@@ -128,6 +124,14 @@ public class SmsHandler
             if (currentGroupNumbers.size() > 0)
                 isGroupMsg = true;
             return true;
+        }
+        // --------- - Create GROUP - ---------
+        if (StringValidator.isCreateGroup(beskedLowCase, context)){
+            currentGroup = StringValidator.words.get(2);
+            isCreateGroup = true;
+            ContactsHandler ch = new ContactsHandler(context);
+            ch.createGoogleGroup(currentGroup);
+            return false;
         }
         else{
             return false;

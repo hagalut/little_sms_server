@@ -33,17 +33,22 @@ public class ContactsHandler {
 
 	public ContactsHandler(Context cont) {
 		this.context = cont;
-		
-		Pattern emailPattern = Patterns.EMAIL_ADDRESS; // API level 8+
-		Account[] accounts = AccountManager.get(context).getAccounts();
-		for (Account account : accounts) {
-		    if (emailPattern.matcher(account.name).matches() &&
-		    		account.type.equals("com.google")) {
-		    	googleAccountName = account.name;
-		    	break;
-		    }
-		}
+
+        getDefaultGoogleAccountName();
 	}
+
+    private void getDefaultGoogleAccountName()
+    {
+        Pattern emailPattern = Patterns.EMAIL_ADDRESS; // API level 8+
+        Account[] accounts = AccountManager.get(context).getAccounts();
+        for (Account account : accounts) {
+            if (emailPattern.matcher(account.name).matches() &&
+                    account.type.equals("com.google")) {
+                googleAccountName = account.name;
+                break;
+            }
+        }
+    }
 
 	// ------------------------------------------------------ Create Google
 	// Contact ()
@@ -517,6 +522,7 @@ public class ContactsHandler {
     // ------------------------------------------------------ Create Google
     // Group ()
     public void createGoogleGroup(String groupName) {
+        Log.i("Creating group", groupName);
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
 
         ops = new ArrayList<ContentProviderOperation>();
@@ -532,6 +538,7 @@ public class ContactsHandler {
 
             context.getContentResolver().applyBatch(ContactsContract.AUTHORITY,
                     ops);
+            Log.i("Creating group", groupName + " is completed");
 
         } catch (Exception e) {
             Log.e("Error Creating Group", e.toString());

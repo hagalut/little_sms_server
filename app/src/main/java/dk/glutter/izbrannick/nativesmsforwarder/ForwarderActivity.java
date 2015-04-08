@@ -165,7 +165,7 @@ public class ForwarderActivity extends Activity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        findViewById(R.id.sync_button).setOnTouchListener(mDelayHideTouchListener);
 
         findViewById(R.id.forwarder_toggl).setOnClickListener(toggleBtnTouchListener);
         findViewById(R.id.toggleButton_delete_smss).setOnClickListener(toggleDeleteBtnTouchListener);

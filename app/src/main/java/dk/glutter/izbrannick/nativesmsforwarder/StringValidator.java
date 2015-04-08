@@ -66,12 +66,58 @@ public class StringValidator {
                 for (int i = 0; i < splitedMessage.length; i++)
                     words.add(splitedMessage[i]);
                 ContactsHandler myContacs = new ContactsHandler(context);
+                if (isAGroup(context, myContacs, words.get(0))) {
+                    try {
+                        myContacs.getAllGroupNames();
+
+                        groupNumbers = myContacs.getAllNumbersFromGroupName(splitedMessage[0].toUpperCase());
+                    } catch (Exception e) {
+                        Log.e("Numbers from Group", e.getMessage());
+                        return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean isCreateGroup(String message, Context context)
+    {
+        if (!message.isEmpty() && message.startsWith("create group ")) {
+            String[] splitedMessage = message.split(" ");
+            if (splitedMessage.length > 1) {
+                groupNumbers = new ArrayList<>();
+                words = new ArrayList<>();
+                for (int i = 0; i < splitedMessage.length; i++)
+                    words.add(splitedMessage[i]);
+                ContactsHandler myContacs = new ContactsHandler(context);
                 try {
                     groupNumbers = myContacs.getAllNumbersFromGroupName(splitedMessage[0].toUpperCase());
                 } catch (Exception e) {
                     Log.e("Numbers from Group", e.getMessage());
                     return false;
                 }
+                return true;
+            }
+        }
+        else {
+            return false;
+        }
+        return false;
+    }
+
+    private static boolean isAGroup(Context context, ContactsHandler myContacs, String groupName)
+    {
+
+        ArrayList<String> allGroupNames = myContacs.getAllGroupNames();
+        for (int i = 0; i < allGroupNames.size(); i++) {
+            if (allGroupNames.get(i).equalsIgnoreCase(groupName)) {
+                groupName = allGroupNames.get(i);
                 return true;
             }
         }
