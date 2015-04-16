@@ -1,8 +1,5 @@
 package dk.glutter.izbrannick.nativesmsforwarder;
 
-import dk.glutter.izbrannick.nativesmsforwarder.otherapps.ThirdPartyApp;
-import dk.glutter.izbrannick.nativesmsforwarder.util.SystemUiHider;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -24,6 +21,9 @@ import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import dk.glutter.izbrannick.nativesmsforwarder.otherapps.ThirdPartyApp;
+import dk.glutter.izbrannick.nativesmsforwarder.util.SystemUiHider;
 
 
 /**
@@ -171,10 +171,6 @@ public class ForwarderActivity extends Activity {
         findViewById(R.id.toggleButton_delete_smss).setOnClickListener(toggleDeleteBtnTouchListener);
         findViewById(R.id.toggleButton_respond_users).setOnClickListener(toggleRespondBtnTouchListener);
 
-        /* Greate a group
-        ContactsHandler contactsHandler = new ContactsHandler(context);
-        contactsHandler.createGoogleGroup("GROUP1:");
-        */
     }
 
     @Override

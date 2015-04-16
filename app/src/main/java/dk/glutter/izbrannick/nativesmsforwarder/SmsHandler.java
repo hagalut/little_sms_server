@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.telephony.SmsManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -29,10 +28,7 @@ public class SmsHandler
 	private String beskedLowCase;
 	private String currentGroup;
     private String currSmsId;
-	private boolean isTilmelding;
-    private boolean isAfmelding;
     private boolean isGroupMsg;
-    private boolean isCreateGroup;
 
     SmsHandler(Context context)
     {
@@ -51,38 +47,15 @@ public class SmsHandler
         this.respondMessages = respondMessages;
 
         currentGroupNumbers = null;
-        isTilmelding = false;
-        isAfmelding = false;
         isGroupMsg = false;
-        isCreateGroup = false;
 
         allGroupNames = myContacs.getAllGroupNames();
 
-        if (isValidMessage())
-        {
-            boolean groupFound = false;
-
-            for (int i = 0; i < allGroupNames.size(); i++) {
-                    if (allGroupNames.get(i).equalsIgnoreCase(currentGroup)) {
-
-                        currentGroup = allGroupNames.get(i);
-                        groupFound = true;
-                        break;
-                    }
-            }
-            if (groupFound)
-                treatSmsLikeAKing();
-            else
-            {
-                if (respondMessages)
-                    new LongOperation().execute(phoneNr, context.getString(R.string.no_group) + currentGroup, currSmsId);
-            }
-
-        }
-        else {
-            if (respondMessages)
+        if (!isValidMessage()){
                 new LongOperation().execute(phoneNr, context.getString(R.string.help_msg), currSmsId);
         }
+        // force Sync with google contacts
+        SyncContacts.requestSync(context);
 	}
 
     private boolean isValidMessage()
@@ -107,7 +80,25 @@ public class SmsHandler
                     break;
                 }
             }
-            isTilmelding = true;
+
+            if (!(myContacs.getAllNumbersFromGroupName(currentGroup).contains(phoneNr))) {
+                Log.d("Creating contact", currentName + "-in-" + currentGroup);
+                myContacs.createGoogleContact(currentName, "", phoneNr, currentGroup);
+
+                Log.d("Signup sending", currentName);
+                if (respondMessages) {
+                    new LongOperation().execute(phoneNr, context.getString(R.string.signup_sucress)
+                            + currentGroup + ". "
+                            + context.getString(R.string.help_msg), currSmsId);
+                }
+            } else {
+                if (respondMessages) {
+                    Log.d("DENY Respond", currentName);
+                    new LongOperation().execute(phoneNr, context.getString(R.string.already_signed)
+                            + currentGroup + ". "
+                            + context.getString(R.string.help_msg), currSmsId);
+                }
+            }
             return true;
         }
 		// --------- - Resign - ---------
@@ -115,7 +106,7 @@ public class SmsHandler
             currentGroup = StringValidator.words.get(1);
             // no name needed
             // currentName = StringValidator.words.get(2);
-            isAfmelding = true;
+            removeUser(phoneNr, currentGroup);
             return true;
         }
 		// --------- - GROUP Message - ---------
@@ -123,78 +114,23 @@ public class SmsHandler
             currentGroup = StringValidator.words.get(0);
 			currentGroupNumbers = StringValidator.groupNumbers;
             if (currentGroupNumbers.size() > 0)
+            {
                 isGroupMsg = true;
-            return true;
+                new LongOperation().execute(phoneNr, besked, currSmsId);
+                return true;
+            }
+            return false;
         }
         // --------- - Create GROUP - ---------
         if (StringValidator.isCreateGroup(beskedLowCase, context)){
             currentGroup = StringValidator.words.get(2);
-            isCreateGroup = true;
             ContactsHandler ch = new ContactsHandler(context);
             ch.createGoogleGroup(currentGroup);
-            return false;
+            return true;
         }
         else{
             return false;
         }
-	}
-
-	private void treatSmsLikeAKing()
-	{
-        //if (!(new LongOperation().getStatus().equals(AsyncTask.Status.RUNNING))) {
-            if (currentGroup != null) {
-
-                if (isTilmelding) {
-                    if (!(myContacs.getAllNumbersFromGroupName(currentGroup).contains(phoneNr))) {
-                        Log.d("Creating contact", currentName + "-in-" + currentGroup);
-                        myContacs.createGoogleContact(currentName, "", phoneNr, currentGroup);
-
-                        Log.d("Signup sending", currentName);
-                        if (respondMessages) {
-                            new LongOperation().execute(phoneNr, context.getString(R.string.signup_sucress)
-                                    + currentGroup + ". "
-                                    + context.getString(R.string.help_msg), currSmsId);
-                            /*
-                            sendSmsThenDelete(phoneNr, context.getString(R.string.signup_sucress)
-                                    + currentGroup + ". "
-                                    + context.getString(R.string.help_msg), currSmsId, deleteMessages);
-                                    */
-                        }
-
-                        // force Sync phone contacts with gmail contacts
-                        SyncContacts.requestSync(context);
-                    } else {
-                        if (respondMessages) {
-                            Log.d("DENY Respond", currentName);
-                            new LongOperation().execute(phoneNr, context.getString(R.string.already_signed)
-                                    + currentGroup + ". "
-                                    + context.getString(R.string.help_msg), currSmsId);
-                            /*
-                            sendSmsThenDelete(phoneNr, context.getString(R.string.already_signed)
-                                    + currentGroup + ". "
-                                    + context.getString(R.string.help_msg), currSmsId, deleteMessages);
-                                    */
-                        }
-                    }
-
-                    return;
-                }
-                if (isAfmelding) {
-                    removeUser(phoneNr, currentGroup);
-
-                    // force Sync with google contacts
-                    SyncContacts.requestSync(context);
-
-                    return;
-                }
-                if (isGroupMsg) {
-                    new LongOperation().execute(phoneNr, besked, currSmsId);
-                }
-            } else {
-                if (respondMessages)
-                    new LongOperation().execute(phoneNr, context.getString(R.string.no_group), currSmsId);
-            }
-
 	}
 
     private class LongOperation extends AsyncTask<String, Void, String> {
@@ -212,19 +148,28 @@ public class SmsHandler
                         smsManager.sendMultipartTextMessage(currentGroupNumbers.get(i), null, iFragmentList, null, null);
                         Log.i("Sending msg to:", currentGroupNumbers.get(i));
                     }
-                }else
+                    if (deleteMessages) {
+                        // try ---------  DELETE SMS
+                        try {
+                            Log.i("Try delete sms id:", params[2]);
+                            delete_thread(params[2]);
+                        } catch (Exception e) {
+                            Log.d("Error deleting SMS ", params[0]+ " messge: " + params[1]);
+                        }
+                    }
+                }
+                else
                 {
                     smsManager.sendMultipartTextMessage(params[0], null, iFragmentList, null, null);
                     Log.i("Send response to:", params[0]);
-                }
-
-                if (deleteMessages) {
-                    // try ---------  DELETE SMS
-                    try {
-                        Log.i("Try delete sms id:", params[2]);
-                        delete_thread(params[2]);
-                    } catch (Exception e) {
-                        Log.d("Error deleting SMS ", params[0]+ " messge: " + params[1]);
+                    if (deleteMessages) {
+                        // try ---------  DELETE SMS
+                        try {
+                            Log.i("Try delete sms id:", params[2]);
+                            delete_thread(params[2]);
+                        } catch (Exception e) {
+                            Log.d("Error deleting SMS ", params[0]+ " messge: " + params[1]);
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -240,6 +185,8 @@ public class SmsHandler
                 iFragmentList = smsManager.divideMessage("Beskeden blev sendt til:" + currentGroup + ". Tak for det.");
                 smsManager.sendMultipartTextMessage(phoneNr, null, iFragmentList, null, null);
             }
+            // force Sync with google contacts
+            SyncContacts.requestSync(context);
         }
 
         @Override
@@ -289,17 +236,11 @@ public class SmsHandler
             myContacs.deleteContactFromGroup( phoneNr, currentGroup);
             if (respondMessages)
                 new LongOperation().execute(phoneNr, context.getString(R.string.resign_sucress) + currentGroup, currSmsId);
-            /*
-            sendSmsThenDelete(phoneNr,context.getString(R.string.resign_sucress) + currentGroup, currSmsId, deleteMessages);
-            */
         }catch (Exception e)
         {
             Log.d(failedMsg, e.getMessage());
             if (respondMessages)
                 new LongOperation().execute(context.getString(R.string.ADMIN_NR), failedMsg, currSmsId);
-                /*
-            sendSmsThenDelete(context.getString(R.string.ADMIN_NR), failedMsg, currSmsId, deleteMessages);
-            */
         }
 
 	}
