@@ -10,6 +10,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
@@ -122,6 +123,8 @@ public class ContactsHandler {
             String id = "0";
             try{
                 id = getContactID(phone);
+                String str = "phone:" + phone + " id:" + id;
+                Log.d("GetContact id", str);
             }
             catch (Exception e)
             {
@@ -164,13 +167,6 @@ public class ContactsHandler {
             }
 
         }
-
-		try {
-			ContentProviderResult[] results = context.getContentResolver()
-					.applyBatch(ContactsContract.AUTHORITY, ops);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	// ------------------------------------------------------ Function return
@@ -375,7 +371,7 @@ public class ContactsHandler {
 		return ids;
 	}
 
-	private String getContactID(String phoneNr) {
+	private String getContactID_OLD(String phoneNr) {
 		ContentResolver contentResolver = context.getContentResolver();
 
 		Uri uri = Uri.withAppendedPath(
@@ -402,6 +398,30 @@ public class ContactsHandler {
 		return null;
 	}
 
+    public String getContactID(String number) {
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
+        //String name = "?";
+        String contactId = "?";
+
+        ContentResolver contentResolver = context.getContentResolver();
+        Cursor contactLookup = contentResolver.query(uri, new String[] {BaseColumns._ID,
+                ContactsContract.PhoneLookup.DISPLAY_NAME }, null, null, null);
+
+        try {
+            if (contactLookup != null && contactLookup.getCount() > 0) {
+                contactLookup.moveToNext();
+                //name = contactLookup.getString(contactLookup.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
+                contactId = contactLookup.getString(contactLookup.getColumnIndex(BaseColumns._ID));
+            }
+        } finally {
+            if (contactLookup != null) {
+                contactLookup.close();
+            }
+        }
+
+        return contactId;
+    }
+
     // ------------------------------------------------------ Add person ID To
     // Group
     private Uri addToGroup(long rawPersonId, long groupRowId) {
@@ -416,8 +436,8 @@ public class ContactsHandler {
 
     }
 
-    // -------- Return Group RAW ID for contact ID
-    private long getGroupRawIdFromID(Long contactId){
+    // -------- Return Group ROW ID for contact ID
+    private long getGroupRowIdFromID(Long contactId){
         Uri uri = Data.CONTENT_URI;
         String where = String.format(
                 "%s = ? AND %s = ?",
@@ -450,7 +470,7 @@ public class ContactsHandler {
         }
     }
 
-    private long getGroupRawIdFromName(String groupName){
+    private long getGroupRowIdFromGroupName(String groupName){
         Uri uri = Data.CONTENT_URI;
         String where = String.format(
                 "%s = ? AND %s = ?",
@@ -512,9 +532,7 @@ public class ContactsHandler {
     // Group ()
     public void createGoogleGroup(String groupName) {
         Log.i("Creating group", groupName);
-        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-
-        ops = new ArrayList<ContentProviderOperation>();
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
         ops.add(ContentProviderOperation
                 .newInsert(ContactsContract.Groups.CONTENT_URI)
