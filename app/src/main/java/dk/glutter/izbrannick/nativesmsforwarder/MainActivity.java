@@ -1,32 +1,17 @@
 package dk.glutter.izbrannick.nativesmsforwarder;
 
 import android.annotation.TargetApi;
-import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
-import android.telephony.SmsManager;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import dk.glutter.izbrannick.nativesmsforwarder.contacts.ContactsHandler;
 
 
 public class MainActivity extends ActionBarActivity {

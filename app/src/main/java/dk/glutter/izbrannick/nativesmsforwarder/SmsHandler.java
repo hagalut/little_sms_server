@@ -100,7 +100,7 @@ public class SmsHandler
 
             if (!exists) {
                 Log.d("Creating contact", currentName + "-in-" + currentGroup);
-                myContacs.createGoogleContact(currentName, "", phoneNr, currentGroup);
+                myContacs.createGoogleContact(currentName, phoneNr, currentGroup);
 
                 Log.d("Signup sending", currentName);
                 if (respondMessages) {

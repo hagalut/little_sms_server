@@ -5,7 +5,6 @@ import android.accounts.AccountManager;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -19,13 +18,10 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.PhoneLookup;
-import android.provider.ContactsContract.RawContacts;
 import android.util.Log;
 import android.util.Patterns;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.regex.Pattern;
 
 public class ContactsHandler {
@@ -58,7 +54,7 @@ public class ContactsHandler {
 
 	// ------------------------------------------------------ Create Google
 	// Contact ()
-	public void createGoogleContact(String name, String email, String phone, String group) {
+	public void createGoogleContact(String name, String phone, String groupName) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
         String ctctName = null;
@@ -103,90 +99,36 @@ public class ContactsHandler {
                     .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,
                             Phone.TYPE_MOBILE).build());
 
-            // ---------- Add Contacts Email
-        /*
-		ops.add(ContentProviderOperation
-				.newInsert(Data.CONTENT_URI)
-				.withValueBackReference(Data.RAW_CONTACT_ID, 0)
-				.withValue(
-						ContactsContract.Data.MIMETYPE,
-						ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-				.withValue(ContactsContract.CommonDataKinds.Email.DATA, email)
-				.withValue(ContactsContract.CommonDataKinds.Email.TYPE,
-						ContactsContract.CommonDataKinds.Email.TYPE_WORK)
-				.build());
-        */
-            // ---------- Add Contact To Group
-            addContactToGroup(ops, group);
-        }else
+            String GroupId = getGroupId(groupName);
+            ops.add(ContentProviderOperation
+                    .newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                    .withValue(
+                            ContactsContract.Data.MIMETYPE,
+                            ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE)
+                    .withValue(
+                            ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID,
+                            GroupId).build());
+        }
+        else
         {
-            String id = "0";
-            try{
-                id = getContactID(phone);
-                String str = "phone:" + phone + " id:" + id;
-                Log.d("GetContact id", str);
-            }
-            catch (Exception e)
-            {
-                Log.d("GetNumberID error", e.getMessage());
-            }
-
-            Log.d("Adding USR-->GRP 1", "----------------");
             try {
-                String grpID = getGroupId(group);
+                String groupID = getGroupId(groupName);
+                String contact = getContactID(phone);
+                String contactRawId  = getRawContactIdsForContact(contact).get(0);
 
-                long ctctRawId = Long.parseLong(id);
-                long grpRowId =  Long.parseLong(grpID);
-
-                Log.d("Adding USR-->GRP", ""+grpID+" "+ctctRawId+" "+grpRowId);
-
-                addToGroup(ctctRawId , grpRowId );
+                addContactToGroup(contactRawId, groupID); //81 13
 
             } catch (Exception e) {
-                Log.w("UpdateContact", e.getMessage());
-                for(StackTraceElement ste : e.getStackTrace()) {
-                    Log.w("UpdateContact", "\t" + ste.toString());
-                }
-
-                Log.d("Adding USR-->GRP 2", "------------------");
-                try {
-                    ContentValues values = new ContentValues();
-                    Uri rawContactUri = context.getContentResolver().insert(RawContacts.CONTENT_URI, values);
-                    values.put(Data.RAW_CONTACT_ID, getContactID(phone));
-                    values.put(Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE);
-                    values.put(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, getGroupId(group));
-                    //values.put(StructuredName.DISPLAY_NAME, "Test Testovic"); //the contact name
-                    context.getContentResolver().insert(android.provider.ContactsContract.Data.CONTENT_URI, values);
-                    //context.getContentResolver().update(TableName, values , android.provider.ContactsContract.Data.CONTENT_URI);
-                    Toast.makeText(context.getApplicationContext(), "NEW Contact Added", Toast.LENGTH_SHORT).show();
-                }catch (Exception e1)
-                {
-                    Log.w("Error addToGroup", e1.getMessage());
-                    Toast.makeText(context.getApplicationContext(), "Error Adding Contact to group", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-        }
-	}
-
-	// ------------------------------------------------------ Function return
-	// group id by Group Title
-	private String getGroupId(String name) {
-        String id = "0";
-        String[] projection = new String[]{ContactsContract.Groups._ID,ContactsContract.Groups.TITLE};
-        Cursor cursor = context.getContentResolver().query(ContactsContract.Groups.CONTENT_URI,
-                projection, null, null, null);
-        ArrayList<String> groupTitle = new ArrayList<String>();
-        while(cursor.moveToNext()){
-            String currName = cursor.getString(cursor.getColumnIndex(ContactsContract.Groups.TITLE));
-            if (currName.equalsIgnoreCase(name)) {
-                id = cursor.getString(cursor.getColumnIndex(ContactsContract.Groups._ID));
-                break;
+                e.printStackTrace();
             }
         }
-        cursor.close();
-
-        return id;
+        try {
+            ContentProviderResult[] results = context.getContentResolver()
+                    .applyBatch(ContactsContract.AUTHORITY, ops);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 
 	// ------------------------------------------------------- All Google Groups
@@ -246,7 +188,7 @@ public class ContactsHandler {
 	// numbers from specific group #name
 	public ArrayList<String> getAllNumbersFromGroupName(String navn) {
 		Cursor cursor = context.getContentResolver().query(
-				ContactsContract.Groups.CONTENT_URI, null, null, null, null);
+                ContactsContract.Groups.CONTENT_URI, null, null, null, null);
 		cursor.moveToFirst();
 		int len = cursor.getCount();
 
@@ -306,27 +248,11 @@ public class ContactsHandler {
 		return numbers;
 	}
 
-	// ------------------------------------------------------ Add Contact To
-	// Group
-	private void addContactToGroup(ArrayList<ContentProviderOperation> ops,
-			String groupName) {
-		String GroupId = getGroupId(groupName);
-		ops.add(ContentProviderOperation
-				.newInsert(ContactsContract.Data.CONTENT_URI)
-				.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-				.withValue(
-						ContactsContract.Data.MIMETYPE,
-						ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE)
-				.withValue(
-						ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID,
-						GroupId).build());
-	}
-
 	// ------------------------------------------------------ Remove Contact
 	// From Group
 	public boolean deleteContactFromGroup(String phoneNr, String group)
 	{
-		long rawContactId = Long.valueOf(getContactID(phoneNr));
+		String rawContactId = getContactID(phoneNr);
 	 	long groupId = Long.valueOf(getGroupId(group));
 
 		ContentResolver cr = context.getContentResolver();
@@ -342,10 +268,10 @@ public class ContactsHandler {
 				+ ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE
 				+ "'";
 
-		for (Long id : getRawContactIdsForContact(rawContactId)) {
+		for (String id : getRawContactIdsForContact(rawContactId)) {
 			try {
 				cr.delete(ContactsContract.Data.CONTENT_URI, where,
-						new String[] { String.valueOf(id) });
+						new String[] { id });
 			} catch (Exception e) {
 				return false;
 			}
@@ -353,50 +279,6 @@ public class ContactsHandler {
 		return true;
 	}
 
-	private HashSet<Long> getRawContactIdsForContact(long contactId) {
-		HashSet<Long> ids = new HashSet<Long>();
-
-		Cursor cursor = context.getContentResolver().query(
-				RawContacts.CONTENT_URI, new String[] { RawContacts._ID },
-				RawContacts.CONTACT_ID + "=?",
-				new String[] { String.valueOf(contactId) }, null);
-
-		if (cursor != null && cursor.moveToFirst()) {
-			do {
-				ids.add(cursor.getLong(0));
-			} while (cursor.moveToNext());
-		}
-
-        cursor.close();
-		return ids;
-	}
-
-	private String getContactID_OLD(String phoneNr) {
-		ContentResolver contentResolver = context.getContentResolver();
-
-		Uri uri = Uri.withAppendedPath(
-				ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
-				Uri.encode(phoneNr));
-
-		String[] projection = new String[] { PhoneLookup.DISPLAY_NAME,
-				PhoneLookup._ID };
-
-		Cursor cursor = contentResolver
-				.query(uri, projection, null, null, null);
-
-		if (cursor != null) {
-			while (cursor.moveToNext()) {
-				String contactName = cursor.getString(cursor
-						.getColumnIndexOrThrow(PhoneLookup.DISPLAY_NAME));
-				String contactId = cursor.getString(cursor
-						.getColumnIndexOrThrow(PhoneLookup._ID));
-				return contactId;
-			}
-
-		}
-        cursor.close();
-		return null;
-	}
 
     public String getContactID(String number) {
         Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
@@ -420,6 +302,59 @@ public class ContactsHandler {
         }
 
         return contactId;
+    }
+
+    private String getGroupId(String name) {
+        String id = "0";
+        String[] projection = new String[]{ContactsContract.Groups._ID,ContactsContract.Groups.TITLE};
+        Cursor cursor = context.getContentResolver().query(ContactsContract.Groups.CONTENT_URI,
+                projection, null, null, null);
+
+        while(cursor.moveToNext()){
+            String currName = cursor.getString(cursor.getColumnIndex(ContactsContract.Groups.TITLE));
+            if (currName.equalsIgnoreCase(name)) {
+                id = cursor.getString(cursor.getColumnIndex(ContactsContract.Groups._ID));
+                break;
+            }
+        }
+        cursor.close();
+
+        return id;
+    }
+
+    public Uri addContactToGroup(String personId, String groupId) {
+
+        ContentValues values = new ContentValues();
+        values.put(ContactsContract.CommonDataKinds.GroupMembership.RAW_CONTACT_ID,
+                personId);
+        values.put(
+                ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID,
+                groupId);
+        values
+                .put(
+                        ContactsContract.CommonDataKinds.GroupMembership.MIMETYPE,
+                        ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE);
+
+        return context.getContentResolver().insert(ContactsContract.Data.CONTENT_URI, values);
+
+    }
+
+    private ArrayList<String> getRawContactIdsForContact(String contactId) {
+        ArrayList<String> ids = new ArrayList<>();
+
+        Cursor cursor = context.getContentResolver().query(
+                ContactsContract.RawContacts.CONTENT_URI, new String[] { ContactsContract.RawContacts._ID },
+                ContactsContract.RawContacts.CONTACT_ID + "=?",
+                new String[] { String.valueOf(contactId) }, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                ids.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return ids;
     }
 
     // ------------------------------------------------------ Add person ID To
