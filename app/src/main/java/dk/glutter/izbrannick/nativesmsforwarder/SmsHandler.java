@@ -81,7 +81,24 @@ public class SmsHandler
                 }
             }
 
-            if (!(myContacs.getAllNumbersFromGroupName(currentGroup).contains(phoneNr))) {
+
+            ArrayList<String> allNumbers = myContacs.getAllNumbersFromGroupName(currentGroup);
+            int size = allNumbers.size();
+
+            boolean exists = false;
+            String tempNr;
+
+            for (int i = 0; i < size; i++)
+            {
+                tempNr = allNumbers.get(i).replace(" ", "").replace("+45", "");
+                phoneNr = phoneNr.replace(" ", "").replace("+45", "");
+
+                if (tempNr.equalsIgnoreCase(phoneNr))
+                    exists = true;
+            }
+
+
+            if (!exists) {
                 Log.d("Creating contact", currentName + "-in-" + currentGroup);
                 myContacs.createGoogleContact(currentName, "", phoneNr, currentGroup);
 
@@ -91,6 +108,7 @@ public class SmsHandler
                             + currentGroup + ". "
                             + context.getString(R.string.help_msg), currSmsId);
                 }
+                return true;
             } else {
                 if (respondMessages) {
                     Log.d("DENY Respond", currentName);
@@ -98,8 +116,8 @@ public class SmsHandler
                             + currentGroup + ". "
                             + context.getString(R.string.help_msg), currSmsId);
                 }
+                return false;
             }
-            return true;
         }
 		// --------- - Resign - ---------
 		if (StringValidator.isResign(beskedLowCase)){
