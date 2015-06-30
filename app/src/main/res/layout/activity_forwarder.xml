@@ -103,7 +103,9 @@
                     android:layout_gravity="center"
                     android:checked="false"
                     android:gravity="center" />
+
             </LinearLayout>
+
         </LinearLayout>
 
     </FrameLayout>
