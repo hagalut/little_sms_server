@@ -11,6 +11,8 @@
         android:textStyle="bold" android:textSize="30sp" android:gravity="center"
         android:text="@string/forwarding_off" />
 
+
+
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
     <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
@@ -28,85 +30,151 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:orientation="vertical"
+        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="wrap_content" >
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|top">
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
 
-                <TextView
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/forwardingIs"
-                    android:id="@+id/textView"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center|top">
 
-                <ToggleButton
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="@string/forwardingIs"
+                        android:id="@+id/textView"
+                        android:layout_gravity="center" />
+
+                    <ToggleButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New ToggleButton"
+                        android:id="@+id/forwarder_toggl"
+                        android:checked="false"
+                        android:layout_gravity="center" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New ToggleButton"
-                    android:id="@+id/forwarder_toggl"
-                    android:checked="false"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center|top">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="@string/deletingIs"
+                        android:id="@+id/textView3"
+                        android:layout_gravity="center" />
+
+                    <ToggleButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="delete_messages"
+                        android:id="@+id/toggleButton_delete_smss"
+                        android:layout_gravity="center"
+                        android:checked="false"
+                        android:gravity="center" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|top">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="@string/respondUsersIs"
+                        android:id="@+id/textView4"
+                        android:layout_gravity="center" />
+
+                    <ToggleButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="respondUsersIs"
+                        android:id="@+id/toggleButton_respond_users"
+                        android:layout_gravity="center"
+                        android:checked="false"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:text="Help Response Message"/>
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:orientation="horizontal">
+
+                        <EditText android:id="@+id/edited_msg_help_msg"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/help_msg" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:text="Signup Response Message"/>
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:orientation="horizontal">
+
+                        <EditText android:id="@+id/edited_msg_signup_sucress"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/signup_sucress" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:text="Resign Response Message"/>
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:orientation="horizontal">
+
+                        <EditText android:id="@+id/edited_msg_resign_sucress"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/resign_sucress" />
+                    </LinearLayout>
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Save Preferences"
+                            android:id="@+id/save_prefs_btn"
+                            android:layout_weight="1" />
+                    </LinearLayout>
+
+
+                </LinearLayout>
             </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|top">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/deletingIs"
-                    android:id="@+id/textView3"
-                    android:layout_gravity="center" />
-
-                <ToggleButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="delete_messages"
-                    android:id="@+id/toggleButton_delete_smss"
-                    android:layout_gravity="center"
-                    android:checked="false"
-                    android:gravity="center" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|top">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/respondUsersIs"
-                    android:id="@+id/textView4"
-                    android:layout_gravity="center" />
-
-                <ToggleButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="respondUsersIs"
-                    android:id="@+id/toggleButton_respond_users"
-                    android:layout_gravity="center"
-                    android:checked="false"
-                    android:gravity="center" />
-
-            </LinearLayout>
-
-        </LinearLayout>
+        </ScrollView>
 
     </FrameLayout>
 
