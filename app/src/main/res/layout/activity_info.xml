@@ -82,6 +82,21 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <TextView android:text="HOW TO:" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewInfoUsage_2"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="#ffccaf07"/>
+
+    <TextView android:text="@string/info_usage_3" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewInfoUsage_3"
+        android:layout_below="@+id/textViewInfoUsage_2"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="#ffc3cc13"/>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

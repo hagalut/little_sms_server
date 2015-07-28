@@ -6,12 +6,13 @@
     <string name="info">Gruppe sms forwarder bruger din telefons originale grupper og kontakter. Det giver mulighed for at administrere brugere via Androids egne kontakter i telefonen. Dvs. du kan bruge phonebook til at adminstrere din grupper og kontakter.</string>
     <string name="info_purpose">Meningen med appen er at tage kontroll over telefonen og forvandle den til en central.</string>
     <string name="info_dedicate">Det er anbefalet at dedikere en mobil til denne app.</string>
-    <string name="info_warning">Advarsel:
-        Tjenesten kan forsage ekstra udgifter, hvis appen skal besvare udenlandske telefon numre. Det er anbefalet at bruge en telefon med fri sms abonnement. </string>
-    <string name="info_usage">For at få alle fordele ved appen, skal du have disse:</string>
+    <string name="info_warning">Advarsel: Tjenesten kan forsage ekstra udgifter, hvis appen skal besvare udenlandske telefon numre. Det er anbefalet at bruge en telefon med fri sms abonnement. </string>
+    <string name="info_usage">For at få alle fordele af appen, skal du have disse:</string>
     <string name="info_usage_0"> - gsm og internet.</string>
     <string name="info_usage_1"> - register telefonen til google account - giver muligheden at administrere brugere og gruppe igennem gmail/google web side .</string>
     <string name="info_usage_2"> - for at tage backup af inkommende SMSer bare instaler "SMS Backup+" appen. Gruppe Sms forrwarder bruger den for at tage backup af smser.</string>
+    <string name="info_usage_3"> - Sms funktioner: Tilmeld Gruppe navn og dit navn, Afmeld Gruppe navn og dit navn, Create Group og navn på ny gruppe, og til sidst for at sende en gruppe besked skriv: Gruppenavn og derefter din besked efter mellerum. Eksempel 1: Tilmeld GRP1 Hans Hansen, Eksempel 2: Afmeld GRP1 Hans, Eksempel 3: GRP1 Hej Alle. Hilsen Hans Hansen, Eksempel 4: Create Group GRP5</string>
+
     <string name="action_settings">Hjælpe info</string>
 
     <string name="title_activity_forwarder">Group SMS Forwarder</string>
@@ -39,6 +40,79 @@
     <string name="deletingIs">Fjernelse af smser efter behandling er:&#32;</string>
     <string name="respondUsersIs">Besvar alle sms beskeder er:&#32;</string>
     <string name="pref_title_feedback_to_messages">Besvar alle sms beskeder</string>
+    <string name="pref_description_enable_response">Dette vil aktivere tilbagemelding til alle indkommende beskeder</string>
 
+
+
+
+    <!-- Strings related to Settings -->
+
+    <string name="title_activity_settings">Instillinger</string>
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">Generel</string>
+
+    <string name="pref_title_enable_forwarding">Aktiver sms videresendelse</string>
+    <string name="pref_description_enable_forwarding">
+        Når sms videresendelse er aktiveret, appen vil lytte efter indkommende beskeder og behandle dem.
+    </string>
+
+    <string name="pref_title_feedback_message">Rediger tilbagemelding</string>
+    <string name="pref_default_feedback_message">For at tilmelde dig til en gruppe skriv: Tilmeld GruppeNavn Navn. For at afmelde dig fra en gruppe skriv: Afmeld GruppeNavn Navn. For at sende besked til en gruppe skriv: GruppeNavn i starten af din besked og mellemrum og derefter din besked</string>
+
+    <string name="pref_title_signup_message">Rediger Tilmelding tilbagemelding</string>
+    <string name="pref_default_signup_message">Du er nu tilmeldt gruppe:&#32;</string>
+
+    <string name="pref_title_resign_message">Rediger Afmelding tilbagemelding</string>
+    <string name="pref_default_resign_message">Du er nu afmeldt fra gruppe:&#32;</string>
+
+    <string name="pref_title_add_friends_to_messages">Tilføj venner til beskeder</string>
+    <string-array name="pref_example_list_titles">
+        <item>Altid</item>
+        <item>Når det er muligt</item>
+        <item>Aldrig</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frekvens</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string name="pref_title_system_sync_settings">System sync indstillinger</string>
+
+
+    <!-- Example settings for Actions -->
+    <string name="pref_header_actions">Actions</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifikationer</string>
+
+    <string name="pref_title_new_message_notifications">Ny besked notifikationer</string>
+
+    <string name="pref_title_ringtone">Ringetone</string>
+    <string name="pref_ringtone_silent">Stille</string>
+
+    <string name="pref_title_vibrate">Vibrer</string>
 
 </resources>

@@ -78,7 +78,7 @@ public class ForwarderActivity extends Activity {
     private SmsHandler smsHandler;
     private boolean forwarding;
     private boolean deleteMessages;
-    private boolean respondMessages;
+    private boolean feedback;
 
 
     @Override
@@ -94,7 +94,7 @@ public class ForwarderActivity extends Activity {
         preferences = context.getApplicationContext().getSharedPreferences("LittleSmsBroadcaster", MODE_PRIVATE);
         forwarding = preferences.getBoolean("forwarding", false);
         deleteMessages = preferences.getBoolean("deleteMessages", false);
-        respondMessages = preferences.getBoolean("respondMessages", false);
+        feedback = preferences.getBoolean("feedback", false);
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
@@ -106,7 +106,7 @@ public class ForwarderActivity extends Activity {
 
         forward_toggle_btn.setChecked(forwarding);
         delete_sms_toggle_btn.setChecked(deleteMessages);
-        respond_usr_toggle_btn.setChecked(respondMessages);
+        respond_usr_toggle_btn.setChecked(feedback);
 
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
@@ -265,10 +265,10 @@ public class ForwarderActivity extends Activity {
     View.OnClickListener toggleRespondBtnTouchListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            respondMessages = respond_usr_toggle_btn.isChecked();
+            feedback = respond_usr_toggle_btn.isChecked();
 
             editor = getSharedPreferences("LittleSmsBroadcaster", MODE_PRIVATE).edit();
-            editor.putBoolean("respondMessages", respondMessages); // value to store
+            editor.putBoolean("feedback", feedback); // value to store
             editor.commit();
         }
     };
@@ -562,7 +562,7 @@ public class ForwarderActivity extends Activity {
                             {
                                 // Handle SMS
                                 text = getString(R.string.sendingMsg) + currNr + " : " + currMsg;
-                                smsHandler = new SmsHandler(context, currNr, currMsg, currSmsId, deleteMessages, respondMessages);
+                                smsHandler = new SmsHandler(context, currNr, currMsg, currSmsId, deleteMessages, feedback);
                                 setMessageRead(Long.valueOf(currSmsId), Sms.MESSAGE_TYPE_SMS);
                             }
                         }

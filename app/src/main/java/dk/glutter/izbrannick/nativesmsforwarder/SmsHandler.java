@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.util.Log;
 
@@ -17,7 +18,7 @@ public class SmsHandler
 	
 	private static Context context;
     private boolean deleteMessages;
-    private boolean respondMessages;
+    private boolean feedback;
 
     private ContactsHandler myContacs;
 	private ArrayList<String> allGroupNames = null;
@@ -29,13 +30,16 @@ public class SmsHandler
 	private String currentGroup;
     private String currSmsId;
     private boolean isGroupMsg;
+    private String feedbackMessage;
+    private String signupMessage;
+    private String resignMessage;
 
     SmsHandler(Context context)
     {
         this.context = context;
     }
 
-    SmsHandler(Context context, String nr, String msg, String currSmsId, boolean deleteMessages, boolean respondMessages)
+    SmsHandler(Context context, String nr, String msg, String currSmsId, boolean deleteMessages, boolean feedback)
 	{
 		this.context = context;
         this.currSmsId = currSmsId;
@@ -44,7 +48,10 @@ public class SmsHandler
 		besked = msg;
 		beskedLowCase = msg.toLowerCase();
         this.deleteMessages = deleteMessages;
-        this.respondMessages = respondMessages;
+        this.feedback = feedback;
+        this.feedbackMessage = PreferenceManager.getDefaultSharedPreferences(context).getString("feedback_text", "");
+        this.signupMessage = PreferenceManager.getDefaultSharedPreferences(context).getString("signup_text", "");
+        this.resignMessage = PreferenceManager.getDefaultSharedPreferences(context).getString("resign_text", "");
 
         currentGroupNumbers = null;
         isGroupMsg = false;
@@ -52,7 +59,7 @@ public class SmsHandler
         allGroupNames = myContacs.getAllGroupNames();
 
         if (!isValidMessage()){
-                new LongOperation().execute(phoneNr, context.getString(R.string.help_msg), currSmsId);
+                new LongOperation().execute(phoneNr, feedbackMessage, currSmsId);
         }
         // force Sync with google contacts
         SyncContacts.requestSync(context);
@@ -103,18 +110,18 @@ public class SmsHandler
                 myContacs.createGoogleContact(currentName, phoneNr, currentGroup);
 
                 Log.d("Signup sending", currentName);
-                if (respondMessages) {
-                    new LongOperation().execute(phoneNr, context.getString(R.string.signup_sucress)
+                if (feedback) {
+                    new LongOperation().execute(phoneNr, signupMessage
                             + currentGroup + ". "
-                            + context.getString(R.string.help_msg), currSmsId);
+                            + feedbackMessage, currSmsId);
                 }
                 return true;
             } else {
-                if (respondMessages) {
+                if (feedback) {
                     Log.d("DENY Respond", currentName);
                     new LongOperation().execute(phoneNr, context.getString(R.string.already_signed)
                             + currentGroup + ". "
-                            + context.getString(R.string.help_msg), currSmsId);
+                            + feedbackMessage, currSmsId);
                 }
                 return false;
             }
@@ -199,19 +206,23 @@ public class SmsHandler
 
         @Override
         protected void onPostExecute(String result) {
+            /*
             if (isGroupMsg) {
-                iFragmentList = smsManager.divideMessage("Beskeden blev sendt til:" + currentGroup + ". Tak for det.");
+                iFragmentList = smsManager.divideMessage("Beskeden blev sendt til:" + currentGroup);
                 smsManager.sendMultipartTextMessage(phoneNr, null, iFragmentList, null, null);
             }
-            // force Sync with google contacts
+            */
+            // trigger Sync with google contacts
             SyncContacts.requestSync(context);
         }
 
         @Override
         protected void onPreExecute() {
             if (isGroupMsg) {
-                iFragmentList = smsManager.divideMessage("Din besked bliver sendt til:" + currentGroup + ". Du vil modtage en bekræftelses besked når den er færdig med at sende.");
-                smsManager.sendMultipartTextMessage(phoneNr, null, iFragmentList, null, null);
+                if (feedback) {
+                    iFragmentList = smsManager.divideMessage("Din besked bliver sendt til:" + currentGroup + ". Du vil modtage en bekræftelses besked når den er færdig med at sende.");
+                    smsManager.sendMultipartTextMessage(phoneNr, null, iFragmentList, null, null);
+                }
             }
         }
 
@@ -252,12 +263,12 @@ public class SmsHandler
         String failedMsg = phoneNr+": " + "SMS: " + besked;
         try {
             myContacs.deleteContactFromGroup( phoneNr, currentGroup);
-            if (respondMessages)
-                new LongOperation().execute(phoneNr, context.getString(R.string.resign_sucress) + currentGroup, currSmsId);
+            if (feedback)
+                new LongOperation().execute(phoneNr, resignMessage + currentGroup, currSmsId);
         }catch (Exception e)
         {
             Log.d(failedMsg, e.getMessage());
-            if (respondMessages)
+            if (feedback)
                 new LongOperation().execute(context.getString(R.string.ADMIN_NR), failedMsg, currSmsId);
         }
 
