@@ -3,17 +3,18 @@
     <string name="app_name">Group sms forwarder</string>
 
     <string name="important">Venligst læs før brug!</string>
-    <string name="info">Gruppe sms forwarder bruger din telefons originale grupper og kontakter. Det giver mulighed for at administrere brugere via Androids egne kontakter i telefonen.</string>
-    <string name="info_purpose">Meningen med apper er at tage kontroll over telefonen og forvandle den til en central.</string>
+    <string name="info">Gruppe sms forwarder bruger din telefons originale grupper og kontakter. Det giver mulighed for at administrere brugere via Androids egne kontakter i telefonen. Dvs. du kan bruge phonebook til at adminstrere din grupper og kontakter.</string>
+    <string name="info_purpose">Meningen med appen er at tage kontroll over telefonen og forvandle den til en central.</string>
     <string name="info_dedicate">Det er anbefalet at dedikere en mobil til denne app.</string>
-    <string name="info_warning">ADVARSEL: 1. All Inbox messages will be deleted! 2. This service may cost you money, especially if receivers are from out of country.</string>
-    <string name="info_usage">In order to use this app you have to:</string>
+    <string name="info_warning">Advarsel:
+        Tjenesten kan forsage ekstra udgifter, hvis appen skal besvare udenlandske telefon numre. Det er anbefalet at bruge en telefon med fri sms abonnement. </string>
+    <string name="info_usage">For at få alle fordele ved appen, skal du have disse:</string>
     <string name="info_usage_0"> - gsm og internet.</string>
     <string name="info_usage_1"> - register telefonen til google account - giver muligheden at administrere brugere og gruppe igennem gmail/google web side .</string>
     <string name="info_usage_2"> - for at tage backup af inkommende SMSer bare instaler "SMS Backup+" appen. Gruppe Sms forrwarder bruger den for at tage backup af smser.</string>
     <string name="action_settings">Hjælpe info</string>
 
-    <string name="title_activity_forwarder">ForwarderActivity</string>
+    <string name="title_activity_forwarder">Group SMS Forwarder</string>
     <string name="dummy_button">Sync Kontaker Nu</string>
     <string name="forwarding_on">Auto Forwarding er aktiveret</string>
     <string name="forwarding_off">Auto Forwarding er deaktiveret. Tænd forwarding ved at trykke på forwarder knap. Knappen vil starte forvarding og vil fjerne alle lokale beskeder fra telefonen.</string>
@@ -37,6 +38,7 @@
     <string name="sendingMsg">Behandler besked fra:&#32;</string>
     <string name="deletingIs">Fjernelse af smser efter behandling er:&#32;</string>
     <string name="respondUsersIs">Besvar alle sms beskeder er:&#32;</string>
+    <string name="pref_title_feedback_to_messages">Besvar alle sms beskeder</string>
 
 
 </resources>

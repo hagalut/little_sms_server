@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.telephony.SmsManager;
 import android.util.Log;
-import android.widget.EditText;
 
 import java.util.ArrayList;
 
@@ -31,16 +30,12 @@ public class SmsHandler
     private String currSmsId;
     private boolean isGroupMsg;
 
-    public static String edited_msg_help_msg;
-    public static String edited_msg_signup_msg;
-    public static String edited_msg_resign_msg;
-
     SmsHandler(Context context)
     {
         this.context = context;
     }
 
-    SmsHandler(Context context, String nr, String msg, String currSmsId, boolean deleteMessages, boolean respondToMessages)
+    SmsHandler(Context context, String nr, String msg, String currSmsId, boolean deleteMessages, boolean respondMessages)
 	{
 		this.context = context;
         this.currSmsId = currSmsId;
@@ -49,15 +44,15 @@ public class SmsHandler
 		besked = msg;
 		beskedLowCase = msg.toLowerCase();
         this.deleteMessages = deleteMessages;
-        this.respondMessages = respondToMessages;
+        this.respondMessages = respondMessages;
 
         currentGroupNumbers = null;
         isGroupMsg = false;
 
         allGroupNames = myContacs.getAllGroupNames();
 
-        if (!isValidMessage()) {
-            new LongOperation().execute(phoneNr, edited_msg_help_msg, currSmsId);
+        if (!isValidMessage()){
+                new LongOperation().execute(phoneNr, context.getString(R.string.help_msg), currSmsId);
         }
         // force Sync with google contacts
         SyncContacts.requestSync(context);
@@ -109,7 +104,7 @@ public class SmsHandler
 
                 Log.d("Signup sending", currentName);
                 if (respondMessages) {
-                    new LongOperation().execute(phoneNr, edited_msg_signup_msg
+                    new LongOperation().execute(phoneNr, context.getString(R.string.signup_sucress)
                             + currentGroup + ". "
                             + context.getString(R.string.help_msg), currSmsId);
                 }
@@ -119,7 +114,7 @@ public class SmsHandler
                     Log.d("DENY Respond", currentName);
                     new LongOperation().execute(phoneNr, context.getString(R.string.already_signed)
                             + currentGroup + ". "
-                            + edited_msg_help_msg, currSmsId);
+                            + context.getString(R.string.help_msg), currSmsId);
                 }
                 return false;
             }
@@ -258,7 +253,7 @@ public class SmsHandler
         try {
             myContacs.deleteContactFromGroup( phoneNr, currentGroup);
             if (respondMessages)
-                new LongOperation().execute(phoneNr, edited_msg_resign_msg + currentGroup, currSmsId);
+                new LongOperation().execute(phoneNr, context.getString(R.string.resign_sucress) + currentGroup, currSmsId);
         }catch (Exception e)
         {
             Log.d(failedMsg, e.getMessage());

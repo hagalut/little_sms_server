@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 
@@ -65,12 +66,13 @@ public class MyBroadcastReceiver extends android.content.BroadcastReceiver {
 
                 if (!currMsg.equals(beskedOld)) {
 
-                    boolean forwarding = preferences.getBoolean("forwarding", false);
-                    boolean delete = preferences.getBoolean("deleteMessages", false);
-                    boolean respond = preferences.getBoolean("respondMessages", false);
+
+                    boolean forwarding = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("enable_forwarding_checkbox", false);
+                    boolean feedback = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("enable_feedback_checkbox", false);
+
 
                     if (forwarding) {
-                        new SmsHandler(context, currNr, currMsg, "0", delete, respond);
+                        new SmsHandler(context, currNr, currMsg, "0", false, feedback);
                     }
                 }
 

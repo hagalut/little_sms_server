@@ -6,7 +6,7 @@
     <string name="info">Group sms forwarder uses your phones native groups and contacts. This gives you opportunity to administrate users through androids native contacts.</string>
     <string name="info_purpose">Purpose of this app is to take over android and turn it to message central.</string>
     <string name="info_dedicate">It is highly recommended to dedicate a separate phone to this app.</string>
-    <string name="info_warning">WARNING: 1. All Inbox messages will be deleted! 2. This service may cost you money, especially if receivers are from out of country.</string>
+    <string name="info_warning">WARNING: 1. This service may cost you money (sms prices), especially if receivers are from out of country, and you have turned feedback on. It is highly recommended to use this app with free sms phone. </string>
     <string name="info_usage">In order to use this app you have to:</string>
     <string name="info_usage_0"> - gsm and internet connection.</string>
     <string name="info_usage_1"> - register this phone to a google account - gives you option to administrate users and groups through gmail/google contacts.</string>
@@ -37,5 +37,7 @@
     <string name="sendingMsg">Sending message from:&#32;</string>
     <string name="deletingIs">Deleting messages after treatment is:&#32;</string>
     <string name="respondUsersIs">Respond back to all messages is:&#32;</string>
+    <string name="pref_title_respond_to_messages">Respond to Messages</string>
+    <string name="pref_description_enable_response">This will activate feedback for all incoming SMSes</string>
 
 </resources>

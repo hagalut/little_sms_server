@@ -12,12 +12,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -173,8 +171,6 @@ public class ForwarderActivity extends Activity {
         findViewById(R.id.toggleButton_delete_smss).setOnClickListener(toggleDeleteBtnTouchListener);
         findViewById(R.id.toggleButton_respond_users).setOnClickListener(toggleRespondBtnTouchListener);
 
-        findViewById(R.id.save_prefs_btn).setOnClickListener(savePefsListener);
-
     }
 
     @Override
@@ -203,11 +199,6 @@ public class ForwarderActivity extends Activity {
             tv.setText(getString(R.string.forwarding_off));
         }
         super.onResume();
-    }
-
-    @Override
-    public boolean onMenuOpened(int featureId, Menu menu) {
-        return super.onMenuOpened(featureId, menu);
     }
 
     @Override
@@ -257,18 +248,6 @@ public class ForwarderActivity extends Activity {
                 forward_toggle_btn.setChecked(false);
                 tv.setText(getString(R.string.forwarding_off));
             }
-        }
-    };
-
-    View.OnClickListener savePefsListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            EditText title = (EditText) findViewById(R.id.edited_msg_help_msg);
-            SmsHandler.edited_msg_help_msg = title.getText().toString();
-            title = (EditText) findViewById(R.id.edited_msg_signup_sucress);
-            SmsHandler.edited_msg_signup_msg = title.getText().toString();
-            title = (EditText) findViewById(R.id.edited_msg_resign_sucress);
-            SmsHandler.edited_msg_resign_msg = title.getText().toString();
         }
     };
 
