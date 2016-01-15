@@ -18,6 +18,22 @@ public class StringValidator {
     public static String signup;
     public static String resign;
 
+    public static boolean isForeignNumber(String number)
+    {
+        if (number.startsWith("+") && number.startsWith( "+" + MainActivity.currentCountryCode))
+        {
+            return false;
+        }
+        if (number.startsWith("00") && number.startsWith( "00" + MainActivity.currentCountryCode))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
     public static boolean isSignup(String message)
     {
         words = null;

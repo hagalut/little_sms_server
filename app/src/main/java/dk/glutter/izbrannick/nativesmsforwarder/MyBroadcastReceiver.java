@@ -69,10 +69,11 @@ public class MyBroadcastReceiver extends android.content.BroadcastReceiver {
 
                     boolean forwarding = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("enable_forwarding_checkbox", false);
                     boolean feedback = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("enable_feedback_checkbox", false);
-
+                    boolean ignore_foreign_numbers = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("ignore_foreign_numbers", false);
+                    boolean add_group_sender_information = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("add_group_sender_information", false);
 
                     if (forwarding) {
-                        new SmsHandler(context, currNr, currMsg, "0", false, feedback);
+                        new SmsHandler(context, currNr, currMsg, "0", false, feedback, ignore_foreign_numbers, add_group_sender_information );
                     }
                 }
 

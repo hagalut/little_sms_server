@@ -16,6 +16,18 @@
         android:title="@string/pref_title_feedback_to_messages"
         android:summary="@string/pref_description_enable_response"
         android:defaultValue="true" />
+    <CheckBoxPreference
+        android:dependency="enable_forwarding_checkbox"
+        android:key="ignore_foreign_numbers"
+        android:title="@string/pref_title_ignore_foreign_numbers"
+        android:summary="@string/pref_description_ignore_foreign_numbers"
+        android:defaultValue="true" />
+    <CheckBoxPreference
+        android:dependency="enable_forwarding_checkbox"
+        android:key="add_group_sender_information"
+        android:title="@string/pref_title_add_group_sender_information"
+        android:summary="@string/pref_description_add_group_sender_information"
+        android:defaultValue="true" />
     <EditTextPreference
         android:dependency="enable_feedback_checkbox"
         android:key="feedback_text"

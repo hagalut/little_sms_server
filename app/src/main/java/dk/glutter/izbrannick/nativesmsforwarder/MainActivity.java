@@ -8,6 +8,8 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -16,12 +18,40 @@ import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
 
+    public static String currentCountryCode;
+
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        currentCountryCode = GetCountryZipCode();
+
         setContentView(R.layout.activity_info);
+    }
+
+    public String GetCountryZipCode(){
+        String CountryID="";
+        String CountryZipCode="0";
+
+        try {
+            TelephonyManager manager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+            //getNetworkCountryIso
+            CountryID= manager.getSimCountryIso().toUpperCase();
+            String[] rl=this.getResources().getStringArray(R.array.CountryCodes);
+            for(int i=0;i<rl.length;i++){
+                String[] g=rl[i].split(",");
+                if(g[1].trim().equals(CountryID.trim())){
+                    CountryZipCode=g[0];
+                    break;
+                }
+            }
+        }catch (Exception e)
+        {
+            Log.e("GetCountryZipCode", e.getMessage());
+        }
+
+        return CountryZipCode;
     }
 
     private void showLocalInfo(final Context context) {

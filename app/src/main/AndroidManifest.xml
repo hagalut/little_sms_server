@@ -41,12 +41,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="dk.glutter.izbrannick.nativesmsforwarder.ForwarderActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_forwarder"
-            android:theme="@style/FullscreenTheme" >
-        </activity>
 
         <activity
             android:name="dk.glutter.izbrannick.nativesmsforwarder.SettingsActivity"
