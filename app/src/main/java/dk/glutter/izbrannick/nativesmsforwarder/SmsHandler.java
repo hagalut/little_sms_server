@@ -195,7 +195,8 @@ public class SmsHandler
                 }
                 else
                 {
-                    smsManager.sendMultipartTextMessage(params[0], null, iFragmentList, null, null);
+                    if(feedback)
+                        smsManager.sendMultipartTextMessage(params[0], null, iFragmentList, null, null);
                     Log.i("Send response to:", params[0]);
                     if (deleteMessages) {
                         // try ---------  DELETE SMS
