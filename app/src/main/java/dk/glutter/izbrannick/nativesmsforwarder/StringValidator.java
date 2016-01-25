@@ -15,6 +15,10 @@ public class StringValidator {
     // checks if message contains requested signup fraze
     // [0]Signup [1]Group Name [2]Name
     public static ArrayList<String> words;
+
+    // array is filled if isGroupMessage() executed | else NULL
+    public static ArrayList<String> groupNumbers;
+
     public static String signup;
     public static String resign;
 
@@ -41,7 +45,7 @@ public class StringValidator {
             String[] splitedMessage = message.split(" ");
             if (splitedMessage.length > 1) {
                 if (splitedMessage[0].equalsIgnoreCase(signup)) {
-                    words = new ArrayList<String>();
+                    words = new ArrayList<>();
                     for (int i = 0; i < splitedMessage.length; i++)
                     {
                         words.add(splitedMessage[i]);
@@ -73,7 +77,6 @@ public class StringValidator {
         return false;
     }
 
-    public static ArrayList<String> groupNumbers;
     public static boolean isGroupMessage(String message, Context context)
     {
         groupNumbers = null;
@@ -159,7 +162,7 @@ public class StringValidator {
 
     private static boolean isAGroup( ContactsHandler myContacs, String groupName)
     {
-        ArrayList<String> allGroupNames = new ArrayList<>();
+        ArrayList<String> allGroupNames;
         try {
             allGroupNames = myContacs.getAllGroupNames();
         }catch (Exception e)
