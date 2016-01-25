@@ -29,7 +29,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
         mainActivity = new MainActivity();
         CurrentCountryCode = GetCountryZipCode();
-        smsHandler = new SmsHandler(getContext(), recieverNumber, recievedMessage, "0", false, true, true, true);
+        smsHandler = new SmsHandler(getContext(), recieverNumber, recievedMessage, "0", false, true, true, true, false);
         TelephonyManager manager = (TelephonyManager) getSystemContext().getSystemService(Context.TELEPHONY_SERVICE);
         //getNetworkCountryIso
         CountryID= manager.getSimCountryIso().toUpperCase();
@@ -40,7 +40,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
     public void testForwarder_countryCode()
     {
-        assertEquals(recieverNumber, smsHandler.phoneNr);
+        assertEquals(recieverNumber, smsHandler.currentPhoneNr);
 
         String[] rl= getSystemContext().getResources().getStringArray(R.array.CountryCodes);
         for(int i=0; i<rl.length; i++){

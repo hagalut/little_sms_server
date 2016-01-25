@@ -23,7 +23,7 @@ public class SmsHandler
     private ContactsHandler myContacs;
 	private ArrayList<String> allGroupNames = null;
 	private ArrayList<String> currentGroupNumbers = new ArrayList<>();
-	public String phoneNr;
+	public String currentPhoneNr;
 	public String besked;
 	public String currentName;
 	public String beskedLowCase;
@@ -35,18 +35,21 @@ public class SmsHandler
     public String resignMessage;
     public boolean ignore_foreign_number;
     public boolean sender_information;
+    public boolean group_members_only;
+    //public boolean feedback_after_group_message;
+    public int number_of_group_members;
 
     SmsHandler(Context context)
     {
         this.context = context;
     }
 
-    SmsHandler(Context context, String nr, String msg, String currSmsId, boolean deleteMessages, boolean feedback, boolean ignore_foreign_numbers, boolean group_sender_information)
+    SmsHandler(Context context, String nr, String msg, String currSmsId, boolean deleteMessages, boolean feedback, boolean ignore_foreign_numbers, boolean group_sender_information, boolean group_members_only)
 	{
 		this.context = context;
         this.currSmsId = currSmsId;
 		myContacs = new ContactsHandler(context);
-		phoneNr = nr;
+		currentPhoneNr = nr;
 		besked = msg;
 		beskedLowCase = msg.toLowerCase();
         this.deleteMessages = deleteMessages;
@@ -56,14 +59,17 @@ public class SmsHandler
         this.resignMessage = PreferenceManager.getDefaultSharedPreferences(context).getString("resign_text", "");
         this.ignore_foreign_number = ignore_foreign_numbers;
         this.sender_information = group_sender_information;
+        this.group_members_only = group_members_only;
+        //this.feedback_after_group_message = feedback_after_group_message;
 
         currentGroupNumbers = null;
         isGroupMsg = false;
+        this.number_of_group_members = 0;
 
         allGroupNames = myContacs.getAllGroupNames();
 
         if (!isValidMessage()){
-                new LongOperation().execute(phoneNr, feedbackMessage, currSmsId);
+                new LongOperation().execute(currentPhoneNr, feedbackMessage, currSmsId);
         }
         // force Sync with google contacts
         SyncContacts.requestSync(context);
@@ -73,9 +79,10 @@ public class SmsHandler
 	{
         StringValidator.signup = context.getString(R.string.signup);
         StringValidator.resign = context.getString(R.string.resign);
+        boolean userExists = isAlreadyInGroup(currentPhoneNr, currentGroup);
 
         // --------- - Handle Foreign Number ?? - ---------
-        if (ignore_foreign_number && StringValidator.isForeignNumber(phoneNr))
+        if (ignore_foreign_number && StringValidator.isForeignNumber(currentPhoneNr))
             return false;
 
 		// --------- - Signup - ---------
@@ -95,29 +102,13 @@ public class SmsHandler
                     break;
                 }
             }
-
-            ArrayList<String> allNumbers = myContacs.getAllNumbersFromGroupName(currentGroup);
-            int size = allNumbers.size();
-
-            boolean exists = false;
-            String tempNr;
-
-            for (int i = 0; i < size; i++)
-            {
-                tempNr = allNumbers.get(i).replace(" ", "").replace("+"+MainActivity.currentCountryCode, "");
-                phoneNr = phoneNr.replace(" ", "").replace("+"+MainActivity.currentCountryCode, "");
-
-                if (tempNr.equalsIgnoreCase(phoneNr))
-                    exists = true;
-            }
-
-            if (!exists) {
+            if (!userExists) {
                 Log.d("Creating contact", currentName + "-in-" + currentGroup);
-                myContacs.createGoogleContact(currentName, phoneNr, currentGroup);
+                myContacs.createGoogleContact(currentName, currentPhoneNr, currentGroup);
 
                 Log.d("Signup sending", currentName);
                 if (feedback) {
-                    new LongOperation().execute(phoneNr, signupMessage
+                    new LongOperation().execute(currentPhoneNr, signupMessage
                             + currentGroup + ". "
                             + feedbackMessage, currSmsId);
                 }
@@ -125,7 +116,7 @@ public class SmsHandler
             } else {
                 if (feedback) {
                     Log.d("DENY Respond", currentName);
-                    new LongOperation().execute(phoneNr, context.getString(R.string.already_signed)
+                    new LongOperation().execute(currentPhoneNr, context.getString(R.string.already_signed)
                             + currentGroup + ". "
                             + feedbackMessage, currSmsId);
                 }
@@ -134,27 +125,51 @@ public class SmsHandler
         }
 		// --------- - Resign - ---------
 		if (StringValidator.isResign(beskedLowCase)){
-            currentGroup = StringValidator.words.get(1);
-            // no name needed
-            // currentName = StringValidator.words.get(2);
-            removeUser(phoneNr, currentGroup);
-            return true;
+            if (userExists)
+            {
+                currentGroup = StringValidator.words.get(1);
+                // no name needed
+                // currentName = StringValidator.words.get(2);
+                removeUser(currentPhoneNr, currentGroup);
+                return true;
+            }
         }
 		// --------- - GROUP Message - ---------
 		if (StringValidator.isGroupMessage(beskedLowCase, context)){
-            currentGroup = StringValidator.words.get(0);
-			currentGroupNumbers = StringValidator.groupNumbers;
-            if (currentGroupNumbers.size() > 0)
+            if (group_members_only)
             {
-                isGroupMsg = true;
-                if (sender_information) {
-                    new LongOperation().execute(phoneNr, besked+" " + context.getString(R.string.sent_from) + phoneNr, currSmsId);
-                }else{
-                    new LongOperation().execute(phoneNr, besked, currSmsId);
+                if (userExists)
+                {
+                    currentGroup = StringValidator.words.get(0);
+                    currentGroupNumbers = StringValidator.groupNumbers;
+                    if (currentGroupNumbers.size() > 0) {
+                        isGroupMsg = true;
+                        if (sender_information) {
+                            new LongOperation().execute(currentPhoneNr, besked + " " + context.getString(R.string.sent_from) + currentPhoneNr, currSmsId);
+                        } else {
+                            new LongOperation().execute(currentPhoneNr, besked, currSmsId);
+                        }
+                        return true;
+                    }
                 }
-                return true;
+                return false;
             }
-            return false;
+            if (!group_members_only)
+            {
+                currentGroup = StringValidator.words.get(0);
+                currentGroupNumbers = StringValidator.groupNumbers;
+                if (currentGroupNumbers.size() > 0) {
+                    isGroupMsg = true;
+                    if (sender_information) {
+                        new LongOperation().execute(currentPhoneNr, besked + " " + context.getString(R.string.sent_from) + currentPhoneNr, currSmsId);
+                    } else {
+                        new LongOperation().execute(currentPhoneNr, besked, currSmsId);
+                    }
+                    return true;
+                }
+
+                return false;
+            }
         }
         // --------- - Create GROUP - ---------
         if (StringValidator.isCreateGroup(beskedLowCase, context)){
@@ -167,6 +182,24 @@ public class SmsHandler
             return false;
         }
 	}
+
+    private boolean isAlreadyInGroup(String phoneNr, String currentGroup) {
+        ArrayList<String> allNumbers = myContacs.getAllNumbersFromGroupName(currentGroup);
+        int size = allNumbers.size();
+
+        boolean exists = false;
+        String tempNr;
+
+        for (int i = 0; i < size; i++)
+        {
+            tempNr = allNumbers.get(i).replace(" ", "").replace("+"+MainActivity.currentCountryCode, "");
+            phoneNr = phoneNr.replace(" ", "").replace("+"+MainActivity.currentCountryCode, "");
+
+            if (tempNr.equalsIgnoreCase(phoneNr))
+                exists = true;
+        }
+        return exists;
+    }
 
     private class LongOperation extends AsyncTask<String, Void, String> {
         final SmsManager smsManager = SmsManager.getDefault();
@@ -181,6 +214,7 @@ public class SmsHandler
                 if (isGroupMsg) {
                     for (int i = 0; i < currentGroupNumbers.size(); i++) {
                         smsManager.sendMultipartTextMessage(currentGroupNumbers.get(i), null, iFragmentList, null, null);
+                        number_of_group_members ++;
                         Log.i("Sending msg to:", currentGroupNumbers.get(i));
                     }
                     if (deleteMessages) {
@@ -218,9 +252,10 @@ public class SmsHandler
         @Override
         protected void onPostExecute(String result) {
             /*
-            if (isGroupMsg) {
-                iFragmentList = smsManager.divideMessage("Beskeden blev sendt til:" + currentGroup);
-                smsManager.sendMultipartTextMessage(phoneNr, null, iFragmentList, null, null);
+            if (feedback_after_group_message) {
+                if (isGroupMsg) {
+                    context.getString(number_of_group_members, R.string.message_was_sent_to);
+                }
             }
             */
             // trigger Sync with google contacts
@@ -231,8 +266,8 @@ public class SmsHandler
         protected void onPreExecute() {
             if (isGroupMsg) {
                 if (feedback) {
-                    iFragmentList = smsManager.divideMessage(context.getString(R.string.message_is_being_sent) + currentGroup + ". Du vil modtage en bekræftelses besked når den er færdig med at sende.");
-                    smsManager.sendMultipartTextMessage(phoneNr, null, iFragmentList, null, null);
+                    iFragmentList = smsManager.divideMessage( context.getString(R.string.message_was_sent_to, number_of_group_members) + context.getString(R.string.message_is_being_sent) + currentGroup + context.getString(R.string.message_is_being_sent_2));
+                    smsManager.sendMultipartTextMessage(currentPhoneNr, null, iFragmentList, null, null);
                 }
             }
         }
@@ -279,8 +314,6 @@ public class SmsHandler
         }catch (Exception e)
         {
             Log.d(failedMsg, e.getMessage());
-            if (feedback)
-                new LongOperation().execute(context.getString(R.string.ADMIN_NR), failedMsg, currSmsId);
         }
 
 	}

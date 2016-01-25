@@ -8,8 +8,8 @@ android {
         applicationId "dk.glutter.izbrannick.nativesmsforwarder"
         minSdkVersion 10
         targetSdkVersion 22
-        versionCode 21
-        versionName "More option & more Features"
+        versionCode 23
+        versionName "More option & more Features III"
     }
     buildTypes {
         release {

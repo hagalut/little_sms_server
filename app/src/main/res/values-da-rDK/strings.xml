@@ -2,9 +2,14 @@
 <resources>
     <string name="pref_title_respond_to_messages">Besvar alle sms beskeder</string>
     <string name="message_is_being_sent">Din besked bliver sent til:&#160;</string>
+    <string name="message_was_sent_to">Din besked blev sent til:&#160;</string>
+    <string name="message_is_being_sent_2">. Du vil modtage selve beskeden som bekræftelse, når den er færdig med at sende.</string>
     <string name="pref_description_add_group_sender_information">Tilføjer afsenders telefon nummer i slutningen af beskeden.</string>
     <string name="pref_description_ignore_foreign_numbers">Dette vil ignorere besvarelser til alle indkommende udenlandske numre</string>
     <string name="pref_title_add_group_sender_information">Tilføj afsender information</string>
     <string name="pref_title_ignore_foreign_numbers">Ignorer udenlandske numre</string>
     <string name="sent_from">Sendt fra:&#160;</string>
+    <string name="pref_title_group_members_only_information">Group Members Only</string>
+    <string name="pref_title_feedback_after_group_message">Tilbagemelding til gruppe afsenderen</string>
+    <string name="pref_description_feedback_after_group_message_information">Sender en smsm til afsenderen efter en gruppe besked blev sendt, men antal af sendte beskeder.</string>
 </resources>

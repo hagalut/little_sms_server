@@ -28,17 +28,17 @@
     -->
 
     <string name="help_msg">For at tilmelde dig til en gruppe skriv: Tilmeld GruppeNavn Navn. For at afmelde dig fra en gruppe skriv: Afmeld GruppeNavn Navn. For at sende besked til en gruppe skriv: GruppeNavn i starten af din besked og mellemrum og derefter din besked</string>
-    <string name="no_group">Sorry, kunne ikke finde gruppen med navnet:&#32;</string>
+    <string name="no_group">Sorry, kunne ikke finde gruppen med navnet:&#160;</string>
 
-    <string name="signup_sucress">Du er nu tilmeldt følgende gruppe:&#32;</string>
-    <string name="resign_sucress">Du er nu afmeldt fra følgende gruppe:&#32;</string>
-    <string name="already_signed">Du er allerede tilmeldt følgende gruppe:&#32;</string>
+    <string name="signup_sucress">Du er nu tilmeldt følgende gruppe:&#160;</string>
+    <string name="resign_sucress">Du er nu afmeldt fra følgende gruppe:&#160;</string>
+    <string name="already_signed">Du er allerede tilmeldt følgende gruppe:&#160;</string>
     <string name="ADMIN_NR">61770122</string>
-    <string name="currentSMSs">Antal beskeder der skal behandles:&#32;</string>
-    <string name="forwardingIs">Forwarding er:&#32;</string>
-    <string name="sendingMsg">Behandler besked fra:&#32;</string>
-    <string name="deletingIs">Fjernelse af smser efter behandling er:&#32;</string>
-    <string name="respondUsersIs">Besvar alle sms beskeder er:&#32;</string>
+    <string name="currentSMSs">Antal beskeder der skal behandles:&#160;</string>
+    <string name="forwardingIs">Forwarding er:&#160;</string>
+    <string name="sendingMsg">Behandler besked fra:&#160;</string>
+    <string name="deletingIs">Fjernelse af smser efter behandling er: &#160;</string>
+    <string name="respondUsersIs">Besvar alle sms beskeder er:&#160;</string>
     <string name="pref_title_feedback_to_messages">Besvar alle sms beskeder</string>
     <string name="pref_description_enable_response">Dette vil aktivere tilbagemelding til alle indkommende beskeder</string>
 
@@ -61,10 +61,10 @@
     <string name="pref_default_feedback_message">For at tilmelde dig til en gruppe skriv: Tilmeld GruppeNavn Navn. For at afmelde dig fra en gruppe skriv: Afmeld GruppeNavn Navn. For at sende besked til en gruppe skriv: GruppeNavn i starten af din besked og mellemrum og derefter din besked</string>
 
     <string name="pref_title_signup_message">Rediger Tilmelding tilbagemelding</string>
-    <string name="pref_default_signup_message">Du er nu tilmeldt gruppe:&#32;</string>
+    <string name="pref_default_signup_message">Du er nu tilmeldt gruppe:&#160;</string>
 
     <string name="pref_title_resign_message">Rediger Afmelding tilbagemelding</string>
-    <string name="pref_default_resign_message">Du er nu afmeldt fra gruppe:&#32;</string>
+    <string name="pref_default_resign_message">Du er nu afmeldt fra gruppe:&#160;</string>
 
     <string name="pref_title_add_friends_to_messages">Tilføj venner til beskeder</string>
     <string-array name="pref_example_list_titles">
@@ -114,6 +114,7 @@
     <string name="pref_ringtone_silent">Stille</string>
 
     <string name="pref_title_vibrate">Vibrer</string>
+    <string name="pref_description_group_members_only">Only Group members will be able to send group messages</string>
 
     <!-- String Array related to Country Code -->
     <string-array name="CountryCodes" >

@@ -29,17 +29,17 @@
     -->
 
     <string name="help_msg">In order to signup to a group write: Signup GroupName YourName. In order to resign write: Resign GroupName YourName. In order to send a group message write: GroupName message.</string>
-    <string name="no_group">Sorry could not find a group with following name:&#32;</string>
+    <string name="no_group">Sorry could not find a group with following name:&#160;</string>
 
-    <string name="signup_sucress">You are now signed up to a following group:&#32;</string>
-    <string name="resign_sucress">You are now resigned from following group:&#32;</string>
-    <string name="already_signed">You already signed to following group:&#32;</string>
+    <string name="signup_sucress">You are now signed up to a following group:&#160;</string>
+    <string name="resign_sucress">You are now resigned from following group:&#160;</string>
+    <string name="already_signed">You already signed to following group:&#160;</string>
     <string name="ADMIN_NR">61770122</string>
-    <string name="currentSMSs">Count of messages to handle:&#32;</string>
-    <string name="forwardingIs">Forwarding is:&#32;</string>
-    <string name="sendingMsg">Sending message from:&#32;</string>
-    <string name="deletingIs">Deleting messages after treatment is:&#32;</string>
-    <string name="respondUsersIs">Respond back to all messages is:&#32;</string>
+    <string name="currentSMSs">Count of messages to handle:&#160;</string>
+    <string name="forwardingIs">Forwarding is:&#160;</string>
+    <string name="sendingMsg">Sending message from:&#160;</string>
+    <string name="deletingIs">Deleting messages after treatment is:&#160;</string>
+    <string name="respondUsersIs">Respond back to all messages is:&#160;</string>
     <string name="pref_title_respond_to_messages">Respond to Messages</string>
     <string name="pref_description_enable_response">This will activate feedback for all incoming SMSes</string>
 
@@ -273,10 +273,10 @@
     <string name="pref_default_feedback_message">In order to signup to a group write: Signup GroupName YourName. In order to resign write: Resign GroupName YourName. In order to send a group message write: GroupName message.</string>
 
     <string name="pref_title_signup_message">Edit Signup message</string>
-    <string name="pref_default_signup_message">You are now signed to following group:&#32;</string>
+    <string name="pref_default_signup_message">You are now signed to following group:&#160;</string>
 
     <string name="pref_title_resign_message">Edit Resign message</string>
-    <string name="pref_default_resign_message">You are now resigned from following group:&#32;</string>
+    <string name="pref_default_resign_message">You are now resigned from following group:&#160;</string>
 
     <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
     <string-array name="pref_example_list_titles">
@@ -333,5 +333,11 @@
     <string name="pref_title_add_group_sender_information">Add sender info</string>
     <string name="pref_description_add_group_sender_information">Adds sender phone number at the end of the message</string>
     <string name="message_is_being_sent">Your message is being sent to:&#160;</string>
+    <string name="message_is_being_sent_2">. You will receive same message as confirmation, after all members received it.</string>
+    <string name="message_was_sent_to">%1$d Received your message.&#160;</string>
+    <string name="pref_title_group_members_only_information">Group Members Only</string>
+    <string name="pref_description_group_members_only">Only Group members will be able to send group messages</string>
+    <string name="pref_title_feedback_after_group_message">Feedback After Group Message</string>
+    <string name="pref_description_feedback_after_group_message_information">Sends feedback sms to group sms sender, with number of recipients sms was sent to.</string>
 
 </resources>

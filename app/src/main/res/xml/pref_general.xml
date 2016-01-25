@@ -28,6 +28,20 @@
         android:title="@string/pref_title_add_group_sender_information"
         android:summary="@string/pref_description_add_group_sender_information"
         android:defaultValue="true" />
+    <!--
+    <CheckBoxPreference
+        android:dependency="enable_forwarding_checkbox"
+        android:key="feedback_after_group_message"
+        android:title="@string/pref_title_feedback_after_group_message"
+        android:summary="@string/pref_description_feedback_after_group_message_information"
+        android:defaultValue="true" />
+        -->
+    <CheckBoxPreference
+    android:dependency="enable_forwarding_checkbox"
+    android:key="group_members_only_information"
+    android:title="@string/pref_title_group_members_only_information"
+    android:summary="@string/pref_description_group_members_only"
+    android:defaultValue="false" />
     <EditTextPreference
         android:dependency="enable_feedback_checkbox"
         android:key="feedback_text"

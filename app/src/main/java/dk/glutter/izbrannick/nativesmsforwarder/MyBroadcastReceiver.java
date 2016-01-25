@@ -71,9 +71,11 @@ public class MyBroadcastReceiver extends android.content.BroadcastReceiver {
                     boolean feedback = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("enable_feedback_checkbox", false);
                     boolean ignore_foreign_numbers = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("ignore_foreign_numbers", false);
                     boolean add_group_sender_information = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("add_group_sender_information", false);
+                    boolean group_members_only = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("group_members_only", false);
+                    //boolean feedback_after_group_message = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("feedback_after_group_message", false);
 
                     if (forwarding) {
-                        new SmsHandler(context, currNr, currMsg, "0", false, feedback, ignore_foreign_numbers, add_group_sender_information );
+                        new SmsHandler(context, currNr, currMsg, "0", false, feedback, ignore_foreign_numbers, add_group_sender_information, group_members_only);
                     }
                 }
 
