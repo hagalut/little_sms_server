@@ -6,6 +6,10 @@ import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
+
 import java.util.ArrayList;
 
 import dk.glutter.izbrannick.nativesmsforwarder.contacts.ContactsHandler;
@@ -15,6 +19,7 @@ public class SmsHandler
 {
 	private static Context context;
     private boolean feedback;
+    private String accountName;
 
     private ContactsHandler myContacs;
 	private ArrayList<String> allGroupNames;
@@ -39,6 +44,7 @@ public class SmsHandler
 
     SmsHandler(Context context, String nr, String msg, boolean feedback, boolean ignore_foreign_numbers, boolean group_sender_information, boolean group_members_only)
 	{
+        accountName = ContactsHandler.googleAccountName;
 		this.context = context;
 		myContacs = new ContactsHandler(context);
 		currentPhoneNr = nr;
@@ -59,7 +65,7 @@ public class SmsHandler
         allGroupNames = myContacs.getAllGroupNames();
 
         if (!isValidMessage()){
-                new LongOperation().execute(currentPhoneNr, feedbackMessage);
+            new LongOperation().execute(currentPhoneNr, feedbackMessage);
         }
 	}
 
@@ -77,6 +83,12 @@ public class SmsHandler
             currentGroup = StringValidator.words.get(1);
             currentName = "No Name";
             currentGroupNumbers = myContacs.getAllNumbersFromGroupName(currentGroup);
+
+            //fabric io log
+            Answers.getInstance().logContentView(new ContentViewEvent()
+                    .putContentName("Signup")
+                    .putContentType("Group: " + currentGroup)
+                    .putContentId(accountName));
 
             boolean userExists = isAlreadyInGroup(currentPhoneNr, currentGroup, currentGroupNumbers);
 
@@ -119,6 +131,12 @@ public class SmsHandler
             currentGroupNumbers = myContacs.getAllNumbersFromGroupName(currentGroup);
             boolean userExists = isAlreadyInGroup(currentPhoneNr, currentGroup, currentGroupNumbers);
 
+            //fabric io log
+            Answers.getInstance().logContentView(new ContentViewEvent()
+                    .putContentName("Resign")
+                    .putContentType("Group: " + currentGroup)
+                    .putContentId(accountName));
+
             if (userExists)
             {
                 currentGroup = StringValidator.words.get(1);
@@ -133,6 +151,12 @@ public class SmsHandler
             currentGroup = StringValidator.words.get(0);
             currentGroupNumbers = StringValidator.groupNumbers;
             boolean userExists = isAlreadyInGroup(currentPhoneNr, currentGroup, currentGroupNumbers);
+
+            //fabric io log
+            Answers.getInstance().logContentView(new ContentViewEvent()
+                    .putContentName("Group Message")
+                    .putContentType("Group: " + currentGroup)
+                    .putContentId(accountName));
 
             if (group_members_only)
             {
@@ -169,6 +193,13 @@ public class SmsHandler
             currentGroup = StringValidator.words.get(2);
             ContactsHandler ch = new ContactsHandler(context);
             ch.createGoogleGroup(currentGroup);
+
+            //fabric io log
+            Answers.getInstance().logContentView(new ContentViewEvent()
+                    .putContentName("Create Group")
+                    .putContentType("Group: " + currentGroup)
+                    .putContentId(accountName));
+
             return true;
         }
         else{
@@ -265,5 +296,14 @@ public class SmsHandler
         }
 
 	}
+
+    private void logUser(String userIdentifyer, String userGroup) {
+        // TODO: Use the current user's information
+        // You can call any combination of these three methods
+        Crashlytics.setUserIdentifier(userIdentifyer);
+        Crashlytics.setUserEmail(accountName);
+        Crashlytics.setUserName(userGroup);
+    }
+
 
 }
