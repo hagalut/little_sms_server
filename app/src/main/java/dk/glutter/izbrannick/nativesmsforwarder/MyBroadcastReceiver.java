@@ -1,5 +1,6 @@
 package dk.glutter.izbrannick.nativesmsforwarder;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,7 +14,7 @@ import dk.glutter.izbrannick.nativesmsforwarder.otherapps.ThirdPartyApp;
 /**
  * Created by luther on 02/04/15.
  */
-public class MyBroadcastReceiver extends android.content.BroadcastReceiver {
+public class MyBroadcastReceiver extends BroadcastReceiver {
 
     static String beskedOld = "";
     String currMsg = "";

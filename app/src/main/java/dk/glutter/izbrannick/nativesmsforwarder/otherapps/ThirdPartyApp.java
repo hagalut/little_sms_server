@@ -19,7 +19,7 @@ public class ThirdPartyApp {
             Intent i = context.getPackageManager().getLaunchIntentForPackage(packageName);
             context.startActivity(i);
         } catch (Exception e) {
-            Log.d("something went wrong lunching" + packageName + "  ", e.getMessage());
+            Log.d("lunching" + packageName + "  ", e.getMessage());
             return false;
         }
         return true;
@@ -28,14 +28,14 @@ public class ThirdPartyApp {
     public boolean startAppAction(Context context, String actionName)
     {
         try {
-            Log.d("Trying to trigger SMSBackupPlus ", actionName);
+            Log.d("SMSBackupPlus ", actionName);
 
             Intent intent = new Intent();
             intent.setAction(actionName);
             context.sendBroadcast(intent);
 
         } catch (Exception e) {
-            Log.d("something went wrong lunching" + actionName + "  ", e.getMessage());
+            Log.d("lunching" + actionName + "  ", e.getMessage());
             return false;
         }
         return true;

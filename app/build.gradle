@@ -1,17 +1,13 @@
 buildscript {
     repositories {
-        maven { url 'https://maven.fabric.io/public' }
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
 
 repositories {
-    maven { url 'https://maven.fabric.io/public' }
 }
 
 
@@ -24,7 +20,7 @@ android {
         minSdkVersion 10
         targetSdkVersion 23
         versionCode 25
-        versionName "io.fabric update II"
+        versionName "io.fabric remove"
     }
     buildTypes {
         release {
@@ -38,7 +34,4 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
-        transitive = true;
-    }
 }
